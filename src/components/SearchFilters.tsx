@@ -1,17 +1,30 @@
 import React from 'react';
-import { Sliders, MapPin, IndianRupee, Users, Wifi, Home } from 'lucide-react';
+import { Sliders, MapPin, IndianRupee, Users, Wifi, Home, X } from 'lucide-react';
 
 interface SearchFiltersProps {
   onFilterChange: (filters: any) => void;
+  onClose?: () => void;
+  isMobile?: boolean;
 }
 
-export default function SearchFilters({ onFilterChange }: SearchFiltersProps) {
+export default function SearchFilters({ onFilterChange, onClose, isMobile }: SearchFiltersProps) {
   return (
-    <div className="bg-white rounded-xl shadow-md overflow-hidden animate-fade-in">
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-center gap-2">
-          <Sliders className="w-5 h-5 text-indigo-600" />
-          <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+    <div className="bg-white rounded-xl shadow-md overflow-y-auto h-full scrollbar-thin 
+      scrollbar-thumb-gray-300 scrollbar-track-transparent">
+      <div className="p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Sliders className="w-5 h-5 text-indigo-600" />
+            <h2 className="text-lg font-bold text-gray-900">Filters</h2>
+          </div>
+          {isMobile && onClose && (
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors duration-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
       
@@ -126,6 +139,15 @@ export default function SearchFilters({ onFilterChange }: SearchFiltersProps) {
             ))}
           </div>
         </div>
+
+        {isMobile && (
+          <button
+            onClick={onClose}
+            className="w-full btn-primary py-3 mt-4"
+          >
+            Apply Filters
+          </button>
+        )}
       </div>
     </div>
   );

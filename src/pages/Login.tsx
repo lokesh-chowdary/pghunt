@@ -1,14 +1,46 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
+import { useAuthStore } from '../store/authStore';
+
+const schema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  rememberMe: z.boolean().optional(),
+});
+
+type FormData = z.infer<typeof schema>;
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
+  
+  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle login logic here
+  const onSubmit = async (data: FormData) => {
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Mock successful login
+      login({
+        id: '1',
+        email: data.email,
+        name: 'John Doe',
+        type: 'tenant',
+      });
+
+      toast.success('Successfully logged in');
+      navigate('/');
+    } catch (error) {
+      toast.error('Invalid email or password');
+    }
   };
 
   return (
@@ -22,7 +54,7 @@ export default function Login() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium text-gray-700">
                 Email address
@@ -31,14 +63,16 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
-                  required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  {...register('email')}
+                  disabled={isSubmitting}
                 />
                 <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -49,38 +83,51 @@ export default function Login() {
                 <input
                   id="password"
                   type="password"
-                  required
-                  className="input-field pl-10"
+                  className={`input-field pl-10 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register('password')}
+                  disabled={isSubmitting}
                 />
                 <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
               <div className="flex items-center">
                 <input
-                  id="remember-me"
+                  id="rememberMe"
                   type="checkbox"
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  {...register('rememberMe')}
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
                   Remember me
                 </label>
               </div>
-              <button type="button" className="text-sm font-medium text-indigo-600 hover:text-indigo-500">
+              <Link 
+                to="/forgot-password"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+              >
                 Forgot password?
-              </button>
+              </Link>
             </div>
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
             >
-              Sign in
-              <ArrowRight className="w-4 h-4" />
+              {isSubmitting ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
             </button>
           </form>
 
