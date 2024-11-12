@@ -44,33 +44,7 @@ const mockPGs: PG[] = [
     images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&q=80"],
     roomTypes: ["Double", "Triple"],
     occupancy: ["Double", "Triple"]
-  },
-  {
-    id: 4,
-    name: "Comfort Stay PG",
-    address: "123 MG Road, Bangalore",
-    city: "Bangalore",
-    price: 12000,
-    rating: 4.5,
-    type: "male",
-    amenities: ["WiFi", "AC", "Food", "Laundry", "Parking", "Security"],
-    images: ["https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80"],
-    roomTypes: ["Single", "Double", "Triple"],
-    occupancy: ["Single", "Double"]
-  },
-  {
-    id: 5,
-    name: "Comfort Stay PG",
-    address: "123 MG Road, Bangalore",
-    city: "Bangalore",
-    price: 12000,
-    rating: 4.5,
-    type: "male",
-    amenities: ["WiFi", "AC", "Food", "Laundry", "Parking", "Security"],
-    images: ["https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&q=80"],
-    roomTypes: ["Single", "Double", "Triple"],
-    occupancy: ["Single", "Double"]
-  },
+  }
 ];
 
 interface Filters {
@@ -86,6 +60,7 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [locationInput, setLocationInput] = useState('');
   const [pgInput, setPgInput] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<Filters>({
     amenities: new Set(),
     occupancy: new Set()
@@ -93,6 +68,7 @@ export default function Home() {
 
   const handleSearch = () => {
     setSearchTerm(`${locationInput} ${pgInput}`.trim());
+    setShowFilters(false);
   };
 
   const handleFilterChange = (newFilters: Partial<Filters>) => {
@@ -170,11 +146,11 @@ export default function Home() {
     <div className="min-h-[calc(100vh-73px)]">
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24 text-center">
+          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6">
             Find Your Perfect PG Accommodation
           </h1>
-          <p className="text-lg text-white/90 mb-12 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-white/90 mb-8 md:mb-12 max-w-2xl mx-auto">
             Discover comfortable and affordable PG accommodations in your preferred location. Browse
             through verified listings with detailed amenities and real photos.
           </p>
@@ -221,17 +197,71 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <div className="lg:col-span-1">
-            <SearchFilters onFilterChange={handleFilterChange} />
+          {/* Mobile Filter Toggle */}
+          <div className="lg:hidden">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="w-full px-4 py-2 bg-white border border-gray-200 rounded-lg
+                flex items-center justify-center gap-2 shadow-sm hover:bg-gray-50
+                transition-colors duration-200"
+            >
+              <Search className="w-5 h-5" />
+              {showFilters ? 'Hide Filters' : 'Show Filters'}
+            </button>
           </div>
-          <div className="lg:col-span-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredPGs.map((pg) => (
-                <PGCard key={pg.id} pg={pg} />
-              ))}
+
+          {/* Filters Sidebar - Mobile Drawer */}
+          <div className={`lg:col-span-1 fixed inset-0 z-40 lg:relative lg:z-0 transform 
+            ${showFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            transition-transform duration-300 ease-in-out lg:block`}>
+            <div className="h-full lg:h-[calc(100vh-185px)] lg:sticky lg:top-[89px]">
+              <div className="h-full bg-white lg:bg-transparent shadow-xl lg:shadow-none">
+                <SearchFilters 
+                  onFilterChange={handleFilterChange} 
+                  onClose={() => setShowFilters(false)}
+                  isMobile={true}
+                />
+              </div>
             </div>
+          </div>
+
+          {/* Backdrop for mobile filters */}
+          {showFilters && (
+            <div 
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+              onClick={() => setShowFilters(false)}
+            />
+          )}
+
+          {/* PG Listings */}
+          <div className="lg:col-span-3 h-full lg:h-[calc(100vh-185px)] overflow-y-auto pr-2 
+            scroll-smooth scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            {filteredPGs.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-md p-8 text-center">
+                <div className="max-w-md mx-auto">
+                  <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    No PGs Found
+                  </h3>
+                  <p className="text-gray-500">
+                    We couldn't find any PGs matching your criteria. Try adjusting your filters
+                    or search terms.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {filteredPGs.map((pg, index) => (
+                  <div key={pg.id} 
+                    className="opacity-0 animate-fade-up"
+                    style={{ animationDelay: `${index * 150}ms`, animationFillMode: 'forwards' }}>
+                    <PGCard pg={pg} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
