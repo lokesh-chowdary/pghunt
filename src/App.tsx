@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import PGDetails from './pages/PGDetails';
+import Footer from './footer/Footer';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="pg/:id" element={<PGDetails />} />
         </Route>
       </Routes>
+      <Footer />
     </Router>
   );
 }
