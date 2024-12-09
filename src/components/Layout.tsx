@@ -70,60 +70,77 @@ export default function Layout() {
                       )}
                     </div>
                   ) : (
-                    <>
-                      <Link to="/login" className="btn-secondary flex items-center gap-2">
-                        <LogIn className="w-4 h-4" />
-                        Login
-                      </Link>
-                      <Link to="/register" className="btn-primary flex items-center gap-2">
-                        <Plus className="w-4 h-4" />
-                        List Your PG
-                      </Link>
-                    </>
+                    <Link to="/login" className="btn-secondary flex items-center gap-2">
+                      <LogIn className="w-4 h-4" />
+                      Login
+                    </Link>
+                  )}
+
+                  {/* Show "List Your PG" only when authenticated */}
+                  {isAuthenticated && (
+                    <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
+                      <Plus className="w-4 h-4" />
+                      List Your PG
+                    </Link>
                   )}
                 </div>
               )}
 
               {/* Mobile buttons */}
+                {/* Mobile navigation dropdown */}
               {!isAuthPage && (
-                <div className="flex lg:hidden items-center gap-2">
-                  {isAuthenticated ? (
-                    <button
-                      onClick={() => setIsMenuOpen(!isMenuOpen)}
-                      className="p-2 rounded-lg bg-white shadow-sm hover:shadow-md 
-                        transition-all duration-200"
-                      aria-label="Toggle menu"
-                    >
-                      {isMenuOpen ? (
-                        <X className="w-6 h-6 text-gray-600" />
+                <div
+                  className={`lg:hidden absolute right-0 left-0 top-full mt-2 transform transition-all duration-300 ease-in-out origin-top ${
+                    isMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
+                  }`}
+                >
+                  <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div className="p-3">
+                      {isAuthenticated ? (
+                        <>
+                          <div className="px-3 py-2 mb-2">
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
+                                <User className="w-6 h-6 text-indigo-600" />
+                              </div>
+                              <div>
+                                <p className="font-medium">{user?.name}</p>
+                                <p className="text-sm text-gray-500">{user?.email}</p>
+                              </div>
+                            </div>
+                          </div>
+                          {/* Show "List Your PG" only when authenticated */}
+                          <Link
+                            to="/register"
+                            className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <Plus className="w-4 h-4" />
+                            List Your PG
+                          </Link>
+                          <button
+                            onClick={() => {
+                              handleLogout();
+                              setIsMenuOpen(false);
+                            }}
+                            className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Sign out
+                          </button>
+                        </>
                       ) : (
-                        <Menu className="w-6 h-6 text-gray-600" />
+                        <Link
+                          to="/login"
+                          className="btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <LogIn className="w-4 h-4" />
+                          Login
+                        </Link>
                       )}
-                    </button>
-                  ) : (
-                    <>
-                      <Link 
-                        to="/login" 
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white shadow-sm
-                          hover:shadow-md transition-all duration-200 text-gray-700 font-medium"
-                      >
-                        <LogIn className="w-5 h-5" />
-                        <span className="text-sm">Login</span>
-                      </Link>
-                      <button
-                        onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        className="p-2 rounded-lg bg-white shadow-sm hover:shadow-md 
-                          transition-all duration-200"
-                        aria-label="Toggle menu"
-                      >
-                        {isMenuOpen ? (
-                          <X className="w-6 h-6 text-gray-600" />
-                        ) : (
-                          <Menu className="w-6 h-6 text-gray-600" />
-                        )}
-                      </button>
-                    </>
-                  )}
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

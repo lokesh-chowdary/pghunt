@@ -18,28 +18,57 @@ type FormData = z.infer<typeof schema>;
 export default function Login() {
   const navigate = useNavigate();
   const login = useAuthStore((state) => state.login);
-  
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: FormData) => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock successful login
-      login({
-        id: '1',
-        email: data.email,
-        name: 'John Doe',
-        type: 'tenant',
+      const response = await fetch('http://127.0.0.1:8001/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
       });
 
-      toast.success('Successfully logged in');
-      navigate('/');
+      if (!response.ok) {
+        if (response.status === 404) {
+          // If the account does not exist, prompt to create one
+          if (
+            window.confirm(
+              'Account does not exist. Would you like to create an account?'
+            )
+          ) {
+            navigate('/register'); // Redirect to registration page
+          }
+        } else {
+          // For other errors (e.g., invalid password)
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Login failed');
+        }
+        return;
+      }
+
+      const result = await response.json();
+
+      // Login the user
+      login({
+        id: result.user.id,
+        email: result.user.email,
+        name: result.user.name,
+        type: result.user.userType,
+      });
+
+      localStorage.setItem('token', result.token); // Store token for future requests
+      alert('Login successful');
+      navigate('/'); // Redirect to homepage after login
     } catch (error) {
-      toast.error('Invalid email or password');
+      console.error('Error during login:', error);
+      alert(error.message || 'An error occurred');
     }
   };
 
@@ -49,21 +78,26 @@ export default function Login() {
         <div className="bg-white shadow-xl rounded-2xl p-8 space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">Welcome back!</h2>
-            <p className="mt-2 text-gray-600">
-              Please sign in to your account
-            </p>
+            <p className="mt-2 text-gray-600">Please sign in to your account</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="email"
+                className="text-sm font-medium text-gray-700"
+              >
                 Email address
               </label>
               <div className="relative">
                 <input
                   id="email"
                   type="email"
-                  className={`input-field pl-10 ${errors.email ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+                  className={`input-field pl-10 ${
+                    errors.email
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : ''
+                  }`}
                   placeholder="Enter your email"
                   {...register('email')}
                   disabled={isSubmitting}
@@ -71,19 +105,28 @@ export default function Login() {
                 <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               {errors.email && (
-                <p className="text-sm text-red-500 mt-1">{errors.email.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="text-sm font-medium text-gray-700"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
                   id="password"
                   type="password"
-                  className={`input-field pl-10 ${errors.password ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}`}
+                  className={`input-field pl-10 ${
+                    errors.password
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                      : ''
+                  }`}
                   placeholder="Enter your password"
                   {...register('password')}
                   disabled={isSubmitting}
@@ -91,7 +134,9 @@ export default function Login() {
                 <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               {errors.password && (
-                <p className="text-sm text-red-500 mt-1">{errors.password.message}</p>
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -103,11 +148,14 @@ export default function Login() {
                   className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
                   {...register('rememberMe')}
                 />
-                <label htmlFor="rememberMe" className="ml-2 block text-sm text-gray-700">
+                <label
+                  htmlFor="rememberMe"
+                  className="ml-2 block text-sm text-gray-700"
+                >
                   Remember me
                 </label>
               </div>
-              <Link 
+              <Link
                 to="/forgot-password"
                 className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
               >
@@ -134,7 +182,10 @@ export default function Login() {
           <div className="text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <Link
+                to="/register"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
                 Sign up now
               </Link>
             </p>
