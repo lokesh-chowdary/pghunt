@@ -10,7 +10,7 @@ export default function Layout() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const isAuthPage = ['/login', '/register', '/forgot-password'].includes(location.pathname);
-  
+
   const { user, isAuthenticated, logout } = useAuthStore();
 
   const handleLogout = () => {
@@ -26,15 +26,11 @@ export default function Layout() {
           <nav className="relative">
             <div className="flex items-center justify-between gap-4">
               {/* Logo - Always visible */}
-              <Link 
-                to="/" 
-                className="flex items-center gap-2.5 group shrink-0 py-1"
-              >
+              <Link to="/" className="flex items-center gap-2.5 group shrink-0 py-1">
                 <div className="bg-white shadow-md rounded-xl p-1.5 group-hover:shadow-lg transition-shadow duration-200">
                   <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-600 group-hover:scale-110 transition-transform duration-200" />
                 </div>
-                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 
-                  bg-clip-text text-transparent">
+                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent">
                   PG Hunt
                 </h1>
               </Link>
@@ -46,8 +42,7 @@ export default function Layout() {
                     <div className="relative">
                       <button
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-50
-                          transition-colors duration-200"
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                       >
                         <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
                           <User className="w-5 h-5 text-indigo-600" />
@@ -56,12 +51,10 @@ export default function Layout() {
                       </button>
 
                       {isProfileOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1
-                          border border-gray-100 animate-fade-in">
+                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 animate-fade-in">
                           <button
                             onClick={handleLogout}
-                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50
-                              flex items-center gap-2"
+                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                           >
                             <LogOut className="w-4 h-4" />
                             Sign out
@@ -87,67 +80,19 @@ export default function Layout() {
               )}
 
               {/* Mobile buttons */}
-                {/* Mobile navigation dropdown */}
-              {!isAuthPage && (
-                <div
-                  className={`lg:hidden absolute right-0 left-0 top-full mt-2 transform transition-all duration-300 ease-in-out origin-top ${
-                    isMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
-                  }`}
+              <div className="lg:hidden">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-600"
                 >
-                  <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="p-3">
-                      {isAuthenticated ? (
-                        <>
-                          <div className="px-3 py-2 mb-2">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <User className="w-6 h-6 text-indigo-600" />
-                              </div>
-                              <div>
-                                <p className="font-medium">{user?.name}</p>
-                                <p className="text-sm text-gray-500">{user?.email}</p>
-                              </div>
-                            </div>
-                          </div>
-                          {/* Show "List Your PG" only when authenticated */}
-                          <Link
-                            to="/register"
-                            className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            <Plus className="w-4 h-4" />
-                            List Your PG
-                          </Link>
-                          <button
-                            onClick={() => {
-                              handleLogout();
-                              setIsMenuOpen(false);
-                            }}
-                            className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            Sign out
-                          </button>
-                        </>
-                      ) : (
-                        <Link
-                          to="/login"
-                          className="btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          <LogIn className="w-4 h-4" />
-                          Login
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+                  {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+              </div>
             </div>
 
             {/* Mobile navigation dropdown */}
             {!isAuthPage && (
-              <div 
+              <div
                 className={`lg:hidden absolute right-0 left-0 top-full mt-2 transform transition-all duration-300 ease-in-out origin-top ${
                   isMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
                 }`}
@@ -167,12 +112,20 @@ export default function Layout() {
                             </div>
                           </div>
                         </div>
+                        <Link
+                          to="/list-your-pg"
+                          className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Plus className="w-4 h-4" />
+                          List Your PG
+                        </Link>
                         <button
                           onClick={() => {
                             handleLogout();
                             setIsMenuOpen(false);
                           }}
-                          className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5"
+                          className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
                         >
                           <LogOut className="w-4 h-4" />
                           Sign out
@@ -180,12 +133,12 @@ export default function Layout() {
                       </>
                     ) : (
                       <Link
-                        to="/register"
-                        className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
+                        to="/login"
+                        className="btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <Plus className="w-4 h-4" />
-                        List Your PG
+                        <LogIn className="w-4 h-4" />
+                        Login
                       </Link>
                     )}
                   </div>
