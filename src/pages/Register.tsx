@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link ,useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Building2, ArrowRight } from 'lucide-react';
 
 export default function Register() {
@@ -8,17 +8,55 @@ export default function Register() {
     email: '',
     password: '',
     confirmPassword: '',
-    userType: 'tenant'
+    userType: 'tenant',
   });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle registration logic here
-  };
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      // Fetch CSRF token if using Laravel Sanctum
+        await fetch('http://127.0.0.1:8001/sanctum/csrf-cookie', {
+        method: 'GET',
+        credentials: 'include',
+      });
+  
+      // Send the registration request
+      const response = await fetch('http://127.0.0.1:8001/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          password_confirmation: formData.confirmPassword,
+        }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+        return;
+      }
+  
+      const data = await response.json();
+      alert('Registration successful!');
+      navigate('/login'); // Redirect to /login
+      console.log(data);
+    } catch (error) {
+      console.error('Error during registration:', error);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   return (
