@@ -38,7 +38,16 @@ export default function Layout() {
               {/* Desktop navigation */}
               {!isAuthPage && (
                 <div className="hidden lg:flex items-center gap-4">
-                  {isAuthenticated ? (
+
+                  {/* Show "List Your PG" only when authenticated */}
+                  {isAuthenticated && (
+                    <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
+                      <Plus className="w-4 h-4" />
+                      List Your PG
+                    </Link>
+                  )}
+
+{isAuthenticated ? (
                     <div className="relative">
                       <button
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -51,7 +60,7 @@ export default function Layout() {
                       </button>
 
                       {isProfileOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 animate-fade-in">
+                        <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 animate-fade-in">
                           <button
                             onClick={handleLogout}
                             className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
@@ -66,14 +75,6 @@ export default function Layout() {
                     <Link to="/login" className="btn-secondary flex items-center gap-2">
                       <LogIn className="w-4 h-4" />
                       Login
-                    </Link>
-                  )}
-
-                  {/* Show "List Your PG" only when authenticated */}
-                  {isAuthenticated && (
-                    <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
-                      <Plus className="w-4 h-4" />
-                      List Your PG
                     </Link>
                   )}
                 </div>

@@ -133,11 +133,11 @@ export default function Home() {
   return (
     <div className="min-h-[calc(100vh-73px)]">
       <div className="bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-24 text-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 text-center">
           <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6">
             Find Your Perfect PG Accommodation
           </h1>
-          <p className="text-base md:text-lg text-white/90 mb-8 md:mb-12 max-w-2xl mx-auto">
+          <p className="text-base md:text-lg text-white/90 mb-4 md:mb-12 max-w-2xl mx-auto">
             Discover comfortable and affordable PG accommodations in your preferred location. Browse
             through verified listings with detailed amenities and real photos.
           </p>
