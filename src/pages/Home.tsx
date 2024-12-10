@@ -138,7 +138,8 @@ export default function Home() {
             Find Your Perfect PG Accommodation
           </h1>
           <p className="text-base md:text-lg text-white/90 mb-8 md:mb-12 max-w-2xl mx-auto">
-            Discover comfortable and affordable PG accommodations in your preferred location.
+            Discover comfortable and affordable PG accommodations in your preferred location. Browse
+            through verified listings with detailed amenities and real photos.
           </p>
 
           {/* Search Box */}
@@ -149,7 +150,9 @@ export default function Home() {
                 <input
                   type="text"
                   placeholder="Enter location..."
-                  className="w-full px-4 py-3 pl-12 rounded-xl bg-gray-50 border-0 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 pl-12 rounded-xl bg-gray-50 border-0
+                    focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                    transition-all duration-200"
                   value={locationInput}
                   onChange={(e) => setLocationInput(e.target.value)}
                 />
@@ -159,14 +162,18 @@ export default function Home() {
                 <input
                   type="text"
                   placeholder="Search PGs..."
-                  className="w-full px-4 py-3 pl-12 rounded-xl bg-gray-50 border-0 focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-3 pl-12 rounded-xl bg-gray-50 border-0
+                    focus:ring-2 focus:ring-indigo-500 focus:border-transparent
+                    transition-all duration-200"
                   value={pgInput}
                   onChange={(e) => setPgInput(e.target.value)}
                 />
               </div>
               <button
                 onClick={handleSearch}
-                className="md:w-auto w-full px-8 py-3 bg-indigo-600 text-white font-medium rounded-xl hover:bg-indigo-700"
+                className="md:w-auto w-full px-8 py-3 bg-indigo-600 text-white font-medium
+                  rounded-xl hover:bg-indigo-700 transition-colors duration-200
+                  flex items-center justify-center gap-2"
               >
                 <Search className="w-5 h-5" />
                 Search
@@ -177,46 +184,46 @@ export default function Home() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-  <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-    {/* Search Filters Section */}
-    <div
-      className={`col-span-1 fixed inset-0 z-40 lg:relative lg:z-0 transform 
-      ${showFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} 
-      transition-transform duration-300 ease-in-out`}
-    >
-      <div className="h-full lg:h-[calc(100vh-185px)] lg:sticky lg:top-[89px]">
-        <div className="h-full bg-white lg:bg-transparent shadow-xl lg:shadow-none overflow-y-auto">
-          <SearchFilters
-            onFilterChange={handleFilterChange}
-            onClose={() => setShowFilters(false)}
-            isMobile={true}
-          />
-        </div>
-      </div>
-    </div>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            {/* Search Filters Section */}
+            <div
+              className={`col-span-1 fixed inset-0 z-40 lg:relative lg:z-0 transform 
+              ${showFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} 
+              transition-transform duration-300 ease-in-out`}
+            >
+              <div className="h-full lg:h-[calc(100vh-185px)] lg:sticky lg:top-[89px]">
+                <div className="h-full bg-white lg:bg-transparent shadow-xl lg:shadow-none overflow-y-auto">
+                  <SearchFilters
+                    onFilterChange={handleFilterChange}
+                    onClose={() => setShowFilters(false)}
+                    isMobile={true}
+                  />
+                </div>
+              </div>
+            </div>
 
-    {/* PG Cards Section */}
-    <div className="col-span-1 lg:col-span-3">
-      {loading ? (
-        <div className="text-center">Loading...</div>
-      ) : error ? (
-        <div className="text-center text-red-500">{error}</div>
-      ) : filteredPGs.length === 0 ? (
-        <div className="bg-white rounded-xl shadow-md p-8 text-center">
-          <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No PGs Found</h3>
-          <p className="text-gray-500">Try adjusting your filters or search terms.</p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredPGs.map((pg) => (
-            <PGCard key={pg.id} pg={pg} />
-          ))}
-        </div>
-      )}
-    </div>
-  </div>
-</div>
+            {/* PG Cards Section */}
+            <div className="col-span-1 lg:col-span-3">
+              {loading ? (
+                <div className="text-center">Loading...</div>
+              ) : error ? (
+                <div className="text-center text-red-500">{error}</div>
+              ) : filteredPGs.length === 0 ? (
+                <div className="bg-white rounded-xl shadow-md p-8 text-center">
+                  <Building2 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No PGs Found</h3>
+                  <p className="text-gray-500">Try adjusting your filters or search terms.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {filteredPGs.map((pg) => (
+                    <PGCard key={pg.id} pg={pg} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+      </div>
     </div>
   );
 }
