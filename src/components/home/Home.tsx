@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, MapPin, Building2 } from 'lucide-react';
-import SearchFilters from '../components/SearchFilters';
-import PGCard from '../components/PGCard';
-import type { PG } from '../types';
+import SearchFilters from './SearchFilters';
+import PGCard from './PGCard';
+import type { PG } from '../../types';
 
 interface Filters {
   location?: string;
