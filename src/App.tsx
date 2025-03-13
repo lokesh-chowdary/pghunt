@@ -9,6 +9,9 @@ import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
 import PGDetails from './pages/PGDetails';
 import Footer from './footer/Footer';
+import ProtectedRoute from './components/ProtectedRoute'; // Import ProtectedRoute
+import AddPGForm from './pages/AddPGForm'; // Import the form component
+
 
 function App() {
   return (
