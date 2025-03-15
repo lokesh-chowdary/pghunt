@@ -1,93 +1,54 @@
 import React from "react";
 import "./Footer.css";
 
-// Import icons (update paths)
-import facebookIcon from "./logos/facebook.png";
-import instagramIcon from "./logos/instagram.png";
-import twitterIcon from "./logos/twitter.png";
-import linkedinIcon from "./logos/linkedIn.png";
 
 const App = () => {
   return (
     <div className="App">
       {/* Footer Section */}
-      <footer>
-        <div className="footer-container">
-          {/* About Us Section */}
-          <div className="footer-section">
-            <h3>About Us</h3>
-            <p>
-              PG-HUNT is your trusted platform for finding the best PG
-              accommodation options nearby. Whether you're a student or a
-              working professional, we make your search easier.
-            </p>
-          </div>
-
-          {/* Quick Links Section */}
-          <div className="footer-section">
-            <h3>Quick Links</h3>
-            <ul>
-              <li><a href="/">Home</a></li>
-              <li><a href="/">Profile</a></li>
-              <li><a href="/search-pgs">Search PG</a></li>
-              <li><a href="/faqs">FAQs</a></li>
-              <li><a href="/list Your PG">List Your PG</a></li>
-              
-              <li><a href="/contact">Contact Us</a></li>
-            </ul>
-          </div>
-
-          {/* Contact Us Section */}
-          <div className="footer-section">
-            <h3>Contact Us</h3>
-            <p>
-              Email: <a href="mailto:support@pghunt.com">support@pghunt.com</a>
-            </p>
-            <p>Phone: +91 123-456-7890</p>
-            <p>Address: PG-HUNT, XYZ Street, City, State, Zip Code</p>
-          </div>
-
-          {/* Social Media Section */}
-          <div className="footer-section">
-            <h3>Follow Us</h3>
-            <div className="social-links">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={facebookIcon} alt="Facebook" className="social-logo" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={instagramIcon} alt="Instagram" className="social-logo" />
-              </a>
-              <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={twitterIcon} alt="Twitter" className="social-logo" />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <img src={linkedinIcon} alt="LinkedIn" className="social-logo" />
-              </a>
+      <footer className="bg-gray-900 text-gray-300 mt-8">
+        <div className="container mx-auto px-4 py-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <h4 className="text-white font-semibold mb-4">COMPANY</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:text-white">About Us</a></li>
+                <li><a href="#" className="hover:text-white">Careers</a></li>
+                <li><a href="#" className="hover:text-white">Press</a></li>
+                <li><a href="#" className="hover:text-white">Contact Us</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">PROPERTY</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:text-white">Gents PG</a></li>
+                <li><a href="#" className="hover:text-white">Ladies PG</a></li>
+                <li><a href="#" className="hover:text-white">Co-living</a></li>
+                <li><a href="#" className="hover:text-white">Premium PGs</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">SERVICES</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:text-white">Rental Agreement</a></li>
+                <li><a href="#" className="hover:text-white">Packers & Movers</a></li>
+                <li><a href="#" className="hover:text-white">Home Services</a></li>
+                <li><a href="#" className="hover:text-white">Legal Services</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">CONNECT WITH US</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="hover:text-white">support@pgfinder.in</a></li>
+                <li><a href="#" className="hover:text-white">1800-XXX-XXXX</a></li>
+                <li><a href="#" className="hover:text-white">Monday - Saturday</a></li>
+                <li><a href="#" className="hover:text-white">9:00 AM - 8:00 PM</a></li>
+              </ul>
             </div>
           </div>
-        </div>
-
-        <div className="footer-bottom">
-          <p>
-            © 2024 PG-HUNT. All rights reserved. | Designed by [Your Company
-            Name]
-          </p>
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p>&copy; 2024 PG Finder Technologies Solution Pvt Ltd. All Rights Reserved.</p>
+          </div>
         </div>
       </footer>
     </div>
