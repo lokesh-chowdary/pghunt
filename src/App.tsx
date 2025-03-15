@@ -17,6 +17,7 @@ function App() {
   return (
     <Router>
       <Toaster position="top-center" richColors />
+      <Layout />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<Home />} />
