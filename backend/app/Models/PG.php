@@ -2,15 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class PG extends Model
 {
-    use HasFactory;
-
-    protected $table = 'pgs'; 
-
     protected $fillable = [
         'name',
         'address',
@@ -19,8 +14,19 @@ class PG extends Model
         'rating',
         'type',
         'amenities',
+        'images',
         'room_types',
         'occupancy',
-        'images',
+        'user_id',
     ];
+
+    protected $casts = [
+        'amenities' => 'array',
+        'images' => 'array',
+        'room_types' => 'array',
+        'occupancy' => 'array',
+        'price' => 'decimal:2',
+        'rating' => 'decimal:1',
+    ];
+    protected $table = 'pgs';
 }

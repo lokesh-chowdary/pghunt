@@ -20,159 +20,389 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <nav className="relative">
-            <div className="flex items-center justify-between gap-4">
-              {/* Logo - Always visible */}
-              <Link 
-                to="/" 
-                className="flex items-center gap-2.5 group shrink-0 py-1"
-              >
-                <div className="bg-white shadow-md rounded-xl p-1.5 group-hover:shadow-lg transition-shadow duration-200">
-                  <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-600 group-hover:scale-110 transition-transform duration-200" />
-                </div>
-                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 
-                  bg-clip-text text-transparent">
-                  PG Hunt
-                </h1>
-              </Link>
+    <>
+      <style>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
 
-              {/* Desktop navigation */}
-              {!isAuthPage && (
-                <div className="hidden lg:flex items-center gap-4">
-                  {isAuthenticated ? (
-                    <div className="relative">
-                      <button
-                        onClick={() => setIsProfileOpen(!isProfileOpen)}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-gray-50
-                          transition-colors duration-200"
-                      >
-                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                          <User className="w-5 h-5 text-indigo-600" />
-                        </div>
-                        <span className="font-medium">{user?.name}</span>
-                      </button>
+        .layout-container {
+          display: flex;
+          flex-direction: column;
+        }
 
-                      {isProfileOpen && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1
-                          border border-gray-100 animate-fade-in">
-                          <button
-                            onClick={handleLogout}
-                            className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50
-                              flex items-center gap-2"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            Sign out
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <Link to="/login" className="btn-secondary flex items-center gap-2">
-                      <LogIn className="w-4 h-4" />
-                      Login
-                    </Link>
-                  )}
+        .header {
+          background: white;
+          border-bottom: 1px solid #e5e7eb;
+          padding: 1rem 1.5rem;
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+        }
 
-                  {/* Show "List Your PG" only when authenticated */}
-                  {isAuthenticated && (
-                    <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
-                      <Plus className="w-4 h-4" />
-                      List Your PG
-                    </Link>
-                  )}
-                </div>
-              )}
+        .nav-container {
+          max-width: 1280px;
+          margin: 0 auto;
+        }
 
-              {/* Mobile buttons */}
-                {/* Mobile navigation dropdown */}
-              {!isAuthPage && (
-                <div
-                  className={`lg:hidden absolute right-0 left-0 top-full mt-2 transform transition-all duration-300 ease-in-out origin-top ${
-                    isMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
-                  }`}
-                >
-                  <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div className="p-3">
-                      {isAuthenticated ? (
-                        <>
-                          <div className="px-3 py-2 mb-2">
-                            <div className="flex items-center gap-3 mb-3">
-                              <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                <User className="w-6 h-6 text-indigo-600" />
-                              </div>
-                              <div>
-                                <p className="font-medium">{user?.name}</p>
-                                <p className="text-sm text-gray-500">{user?.email}</p>
-                              </div>
-                            </div>
-                          </div>
-                          {/* Show "List Your PG" only when authenticated */}
-                          <Link
-                            to="/register"
-                            className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            <Plus className="w-4 h-4" />
-                            List Your PG
-                          </Link>
-                          <button
-                            onClick={() => {
-                              handleLogout();
-                              setIsMenuOpen(false);
-                            }}
-                            className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
-                          >
-                            <LogOut className="w-4 h-4" />
-                            Sign out
-                          </button>
-                        </>
-                      ) : (
-                        <Link
-                          to="/login"
-                          className="btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
-                          onClick={() => setIsMenuOpen(false)}
-                        >
-                          <LogIn className="w-4 h-4" />
-                          Login
-                        </Link>
-                      )}
-                    </div>
+        .nav-content {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .nav-flex {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          justify-content: space-between;
+        }
+
+        .logo-link {
+          display: flex;
+          align-items: center;
+          text-decoration: none;
+          gap: 0.5rem;
+        }
+
+        .logo-container {
+          display: flex;
+          align-items: center;
+        }
+
+        .logo-icon {
+          width: 2rem;
+          height: 2rem;
+          color: #4f46e5;
+        }
+
+        .logo-text {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1f2937;
+        }
+
+        .desktop-nav {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .profile-button {
+          display: flexed;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          background: none;
+          border: none;
+          cursor: pointer;
+          border-radius: 0.375rem;
+          transition: background-color 0.2s;
+        }
+
+        .profile-button:hover {
+          background-color: #f3f4f6;
+        }
+
+        .profile-avatar {
+          width: 2rem;
+          height: 2rem;
+          border-radius: 50%;
+          background-color: #e0e7ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .profile-name {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #1f2937;
+        }
+
+        .dropdown {
+          position: absolute;
+          top: 100%;
+          right: 0;
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.375rem;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          margin-top: 0.5rem;
+          min-width: 12rem;
+        }
+
+        .logout-button {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          width: 100%;
+          padding: 0.75rem 1rem;
+          background: none;
+          border: none;
+          font-size: 0.875rem;
+          color: #1f2937;
+          cursor: pointer;
+          transition: background-color 0.2s;
+        }
+
+        .logout-button:hover {
+          background-color: #f3f4f6;
+        }
+
+        .btn-primary, .btn-secondary {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 0.375rem;
+          font-size: 0.875rem;
+          font-weight: 500;
+          text-decoration: none;
+          transition: all 0.2s;
+        }
+
+        .btn-primary {
+          background-color: #4f46e5;
+          color: white;
+        }
+
+        .btn-primary:hover {
+          background-color: #4338ca;
+        }
+
+        .btn-secondary {
+          background-color: #e0e7ff;
+          color: #4f46e5;
+        }
+
+        .btn-secondary:hover {
+          background-color: #c7d2fe;
+        }
+
+        .mobile-toggle {
+          display: none;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: #1f2937;
+        }
+
+        .mobile-menu {
+          background: white;
+          border-top: 1px solid #e5e7eb;
+          position: Ascending;
+          top: 100%;
+          left: 0;
+          right: 0;
+          transform-origin: top;
+          transition: transform 0.3s ease, opacity 0.3s ease;
+          z-index: 999;
+        }
+
+        .mobile-menu-content {
+          padding: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .mobile-profile {
+          display: flex;
+          align-items: center;
+          padding: 1rem;
+          background: #f9fafb;
+          border-radius: 0.375rem;
+        }
+
+        .mobile-profile-flex {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .mobile-avatar {
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          background-color: #e0e7ff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .mobile-user-name {
+          font-size: 1rem;
+          font-weight: 500;
+          color: #1f2937;
+        }
+
+        .mobile-user-email {
+          font-size: 0.875rem;
+          color: #6b7280;
+        }
+
+        @media (max-width: 768px) {
+          .desktop-nav {
+            display: none;
+          }
+
+          .mobile-toggle {
+            display: block;
+          }
+
+          .header {
+            padding: 1rem;
+          }
+
+          .logo-text {
+            font-size: 1.25rem;
+          }
+
+          .logo-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .mobile-menu {
+            display: none;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .header {
+            padding: 0.75rem;
+          }
+
+          .mobile-menu-content {
+            padding: 1rem;
+          }
+
+          .mobile-profile {
+            padding: 0.75rem;
+          }
+
+          .mobile-avatar {
+            width: 2rem;
+            height: 2rem;
+          }
+
+          .mobile-user-name {
+            font-size: 0.875rem;
+          }
+
+          .mobile-user-email {
+            font-size: 0.75rem;
+          }
+        }
+      `}</style>
+      <div className="layout-container">
+        <header className="header">
+          <div className="nav-container">
+            <nav className="nav-content">
+              <div className="nav-flex">
+                <Link to="/" className="logo-link">
+                  <div className="logo-container">
+                    <Building2 className="logo-icon" />
                   </div>
-                </div>
-              )}
-            </div>
+                  <h1 className="logo-text">PG Hunt</h1>
+                </Link>
 
-            {/* Mobile navigation dropdown */}
-            {!isAuthPage && (
-              <div 
-                className={`lg:hidden absolute right-0 left-0 top-full mt-2 transform transition-all duration-300 ease-in-out origin-top ${
-                  isMenuOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'
-                }`}
-              >
-                <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                  <div className="p-3">
+                {!isAuthPage && (
+                  <div className="desktop-nav">
+                    {isAuthenticated ? (
+                      <div className="relative">
+                        <button
+                          onClick={() => setIsProfileOpen(!isProfileOpen)}
+                          className="profile-button"
+                        >
+                          <div className="profile-avatar">
+                            <User className="w-5 h-5 text-indigo-600" />
+                          </div>
+                          <span className="profile-name">{user?.name}</span>
+                        </button>
+
+                        {isProfileOpen && (
+                          <div className="dropdown">
+                            <button onClick={handleLogout} className="logout-button">
+                              <LogOut className="w-4 h-4" />
+                              Sign out
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link to="/login" className="btn-secondary">
+                        <LogIn className="w-4 h-4" />
+                        Login
+                      </Link>
+                    )}
+
+                    {isAuthenticated && (
+                      <Link to="/list-your-pg" className="btn-primary">
+                        <Plus className="w-4 h-4" />
+                        List Your PG
+                      </Link>
+                    )}
+                  </div>
+                )}
+
+                {!isAuthPage && (
+                  <button
+                    className="mobile-toggle"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  >
+                    {isMenuOpen ? (
+                      <X className="w-6 h-6" />
+                    ) : (
+                      <Menu className="w-6 h-6" />
+                    )}
+                  </button>
+                )}
+              </div>
+
+              {!isAuthPage && (
+                <div 
+                  className="mobile-menu"
+                  style={{
+                    transform: isMenuOpen ? 'scaleY(1)' : 'scaleY(0)',
+                    opacity: isMenuOpen ? 1 : 0
+                  }}
+                >
+                  <div className="mobile-menu-content">
                     {isAuthenticated ? (
                       <>
-                        <div className="px-3 py-2 mb-2">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                              <User className="w-6 h-6 text-indigo-600" />
+                        <div className="mobile-profile">
+                          <div className="mobile-profile-flex">
+                            <div className="mobile-avatar">
+                              <User className="w-5 h-5 text-indigo-600" />
                             </div>
                             <div>
-                              <p className="font-medium">{user?.name}</p>
-                              <p className="text-sm text-gray-500">{user?.email}</p>
+                              <p className="mobile-user-name">{user?.name}</p>
+                              <p className="mobile-user-email">{user?.email}</p>
                             </div>
                           </div>
                         </div>
+                        <Link
+                          to="/list-your-pg"
+                          className="btn-primary"
+                          style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          <Plus className="w-4 h-4" />
+                          List Your PG
+                        </Link>
                         <button
                           onClick={() => {
                             handleLogout();
                             setIsMenuOpen(false);
                           }}
-                          className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5"
+                          className="btn-secondary"
+                          style={{ width: '100%', justifyContent: 'center', padding: '10px', marginTop: '8px' }}
                         >
                           <LogOut className="w-4 h-4" />
                           Sign out
@@ -180,23 +410,23 @@ export default function Layout() {
                       </>
                     ) : (
                       <Link
-                        to="/register"
-                        className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
+                        to="/login"
+                        className="btn-secondary"
+                        style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
                         onClick={() => setIsMenuOpen(false)}
                       >
-                        <Plus className="w-4 h-4" />
-                        List Your PG
+                        <LogIn className="w-4 h-4" />
+                        Login
                       </Link>
                     )}
                   </div>
                 </div>
-              </div>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      <Outlet />
-    </div>
+              )}
+            </nav>
+          </div>
+        </header>
+        <Outlet />
+      </div>
+    </>
   );
 }
