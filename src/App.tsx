@@ -7,9 +7,7 @@ import Register from './components/store/Register';
 import ForgotPassword from './components/store/ForgotPassword';
 import PGDetails from './components/pages/PGCardDetails';
 import Footer from './components/footer/Footer';
-import ProtectedRoute from './components/store/ProtectedRoute'; // Import ProtectedRoute
-import AddPGForm from './components/listpgdetails/AddPGForm'; // Import the form component
-
+import HomePage from './components/HomePage';
 
 function App() {
   return (
@@ -19,6 +17,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/home" element={<Home />} />
+      
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
