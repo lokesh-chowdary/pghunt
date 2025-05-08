@@ -25,6 +25,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/pg/:id" element={<PGDetails />} />
+        <Route path="/list-your-pg" element={<AddPGForm />} /> {/* Form route */}
       </Routes>
       <Footer />
     </Router>
