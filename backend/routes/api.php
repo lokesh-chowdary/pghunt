@@ -20,6 +20,7 @@ Route::group(['middleware' => ['cors']], function () {
     // PG Listing and Creation
     Route::get('/pgs', [PGController::class, 'index']); // List all PGs
     Route::post('/pgs', [PGController::class, 'store']); // Create a new PG
+    Route::get('/pgs/{id}', [PGController::class, 'show']); // Fetch a single PG by ID - NEW
 
     // Authentication
     Route::post('/register', [AuthController::class, 'register']); // User registration

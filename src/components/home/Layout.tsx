@@ -20,6 +20,7 @@ export default function Layout() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -47,7 +48,7 @@ export default function Layout() {
                     </Link>
                   )}
 
-{isAuthenticated ? (
+          {isAuthenticated ? (
                     <div className="relative">
                       <button
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -102,14 +103,14 @@ export default function Layout() {
                   <div className="p-3">
                     {isAuthenticated ? (
                       <>
-                        <div className="px-3 py-2 mb-2">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                              <User className="w-6 h-6 text-indigo-600" />
+                        <div className="mobile-profile">
+                          <div className="mobile-profile-flex">
+                            <div className="mobile-avatar">
+                              <User className="w-5 h-5 text-indigo-600" />
                             </div>
                             <div>
-                              <p className="font-medium">{user?.name}</p>
-                              <p className="text-sm text-gray-500">{user?.email}</p>
+                              <p className="mobile-user-name">{user?.name}</p>
+                              <p className="mobile-user-email">{user?.email}</p>
                             </div>
                           </div>
                         </div>
@@ -144,13 +145,12 @@ export default function Layout() {
                     )}
                   </div>
                 </div>
-              </div>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      <Outlet />
-    </div>
+              )}
+            </nav>
+          </div>
+        </header>
+        <Outlet />
+      </div>
+    </>
   );
 }

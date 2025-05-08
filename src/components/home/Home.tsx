@@ -14,7 +14,7 @@ interface Filters {
 }
 
 export default function Home() {
-  const [pgs, setPgs] = useState<PG[]>([]); // PG data fetched from backend
+  const [pgs, setPgs] = useState<PG[]>([]); 
   const [searchTerm, setSearchTerm] = useState('');
   const [locationInput, setLocationInput] = useState('');
   const [pgInput, setPgInput] = useState('');
@@ -32,7 +32,7 @@ export default function Home() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://127.0.0.1:8001/api/pgs');
+        const response = await fetch('http://127.0.0.1:8000/api/pgs');
         if (!response.ok) throw new Error('Failed to fetch PG data');
         const data = await response.json();
 
@@ -132,56 +132,7 @@ export default function Home() {
 
   return (
     <div className="min-h-[calc(100vh-73px)]">
-      <div className="bg-gradient-to-br from-indigo-600 via-indigo-500 to-purple-500">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 md:mb-6">
-            Find Your Perfect PG Accommodation
-          </h1>
-          <p className="text-base md:text-lg text-white/90 mb-4 md:mb-12 max-w-2xl mx-auto">
-            Discover comfortable and affordable PG accommodations in your preferred location. Browse
-            through verified listings with detailed amenities and real photos.
-          </p>
-
-          {/* Search Box */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white p-2 rounded-2xl shadow-lg flex flex-col md:flex-row gap-2">
-              <div className="flex-1 relative">
-                <MapPin className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Enter location..."
-                  className="w-full px-4 py-3 pl-12 rounded-xl bg-gray-50 border-0
-                    focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-                    transition-all duration-200"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
-                />
-              </div>
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search PGs..."
-                  className="w-full px-4 py-3 pl-12 rounded-xl bg-gray-50 border-0
-                    focus:ring-2 focus:ring-indigo-500 focus:border-transparent
-                    transition-all duration-200"
-                  value={pgInput}
-                  onChange={(e) => setPgInput(e.target.value)}
-                />
-              </div>
-              <button
-                onClick={handleSearch}
-                className="md:w-auto w-full px-8 py-3 bg-indigo-600 text-white font-medium
-                  rounded-xl hover:bg-indigo-700 transition-colors duration-200
-                  flex items-center justify-center gap-2"
-              >
-                <Search className="w-5 h-5" />
-                Search
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+     
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
