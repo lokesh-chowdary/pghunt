@@ -20,6 +20,7 @@ export default function Layout() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-gray-50">
       <header className="bg-white/95 backdrop-blur-md shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
@@ -47,7 +48,7 @@ export default function Layout() {
                     </Link>
                   )}
 
-{isAuthenticated ? (
+          {isAuthenticated ? (
                     <div className="relative">
                       <button
                         onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -115,12 +116,7 @@ export default function Layout() {
                         </div>
                         <Link
                           to="/list-your-pg"
-<<<<<<< HEAD:src/components/home/Layout.tsx
                           className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
-=======
-                          className="btn-primary"
-                          style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
->>>>>>> ac34a0a3c7f9c418ea6ba540348a8e71016cf268:src/components/Layout.tsx
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <Plus className="w-4 h-4" />
@@ -131,12 +127,7 @@ export default function Layout() {
                             handleLogout();
                             setIsMenuOpen(false);
                           }}
-<<<<<<< HEAD:src/components/home/Layout.tsx
                           className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
-=======
-                          className="btn-secondary"
-                          style={{ width: '100%', justifyContent: 'center', padding: '10px', marginTop: '8px' }}
->>>>>>> ac34a0a3c7f9c418ea6ba540348a8e71016cf268:src/components/Layout.tsx
                         >
                           <LogOut className="w-4 h-4" />
                           Sign out
@@ -145,12 +136,7 @@ export default function Layout() {
                     ) : (
                       <Link
                         to="/login"
-<<<<<<< HEAD:src/components/home/Layout.tsx
                         className="btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
-=======
-                        className="btn-secondary"
-                        style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
->>>>>>> ac34a0a3c7f9c418ea6ba540348a8e71016cf268:src/components/Layout.tsx
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <LogIn className="w-4 h-4" />

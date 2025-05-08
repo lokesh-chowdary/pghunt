@@ -225,7 +225,7 @@ import { MapPin, Star, Users, Wifi, Coffee, Car, Shield, Phone, Mail,
   BedDouble, Home, IndianRupee, Clock, Calendar, Share2, Heart, 
   Navigation, CheckCircle2 } from 'lucide-react';
 import type { PG } from '../types';
-import '../styles/global.css';
+
 
 const amenityIcons: Record<string, React.ReactNode> = {
   WiFi: <Wifi className="w-5 h-5" />,
