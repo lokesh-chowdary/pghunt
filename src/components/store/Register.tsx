@@ -22,13 +22,13 @@ export default function Register() {
     
     try {
       // Fetch CSRF token if using Laravel Sanctum
-        await fetch('http://127.0.0.1:8001/sanctum/csrf-cookie', {
+        await fetch('http://127.0.0.1:8000/sanctum/csrf-cookie', {
         method: 'GET',
         credentials: 'include',
       });
   
       // Send the registration request
-      const response = await fetch('http://127.0.0.1:8001/api/register', {
+      const response = await fetch('http://127.0.0.1:8000/api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

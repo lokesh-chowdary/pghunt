@@ -14,7 +14,7 @@ interface Filters {
 }
 
 export default function Home() {
-  const [pgs, setPgs] = useState<PG[]>([]); // PG data fetched from backend
+  const [pgs, setPgs] = useState<PG[]>([]); 
   const [searchTerm, setSearchTerm] = useState('');
   const [locationInput, setLocationInput] = useState('');
   const [pgInput, setPgInput] = useState('');
@@ -32,7 +32,7 @@ export default function Home() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://127.0.0.1:8001/api/pgs');
+        const response = await fetch('http://127.0.0.1:8000/api/pgs');
         if (!response.ok) throw new Error('Failed to fetch PG data');
         const data = await response.json();
 

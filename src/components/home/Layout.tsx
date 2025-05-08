@@ -102,20 +102,25 @@ export default function Layout() {
                   <div className="p-3">
                     {isAuthenticated ? (
                       <>
-                        <div className="px-3 py-2 mb-2">
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                              <User className="w-6 h-6 text-indigo-600" />
+                        <div className="mobile-profile">
+                          <div className="mobile-profile-flex">
+                            <div className="mobile-avatar">
+                              <User className="w-5 h-5 text-indigo-600" />
                             </div>
                             <div>
-                              <p className="font-medium">{user?.name}</p>
-                              <p className="text-sm text-gray-500">{user?.email}</p>
+                              <p className="mobile-user-name">{user?.name}</p>
+                              <p className="mobile-user-email">{user?.email}</p>
                             </div>
                           </div>
                         </div>
                         <Link
                           to="/list-your-pg"
+<<<<<<< HEAD:src/components/home/Layout.tsx
                           className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
+=======
+                          className="btn-primary"
+                          style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
+>>>>>>> ac34a0a3c7f9c418ea6ba540348a8e71016cf268:src/components/Layout.tsx
                           onClick={() => setIsMenuOpen(false)}
                         >
                           <Plus className="w-4 h-4" />
@@ -126,7 +131,12 @@ export default function Layout() {
                             handleLogout();
                             setIsMenuOpen(false);
                           }}
+<<<<<<< HEAD:src/components/home/Layout.tsx
                           className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
+=======
+                          className="btn-secondary"
+                          style={{ width: '100%', justifyContent: 'center', padding: '10px', marginTop: '8px' }}
+>>>>>>> ac34a0a3c7f9c418ea6ba540348a8e71016cf268:src/components/Layout.tsx
                         >
                           <LogOut className="w-4 h-4" />
                           Sign out
@@ -135,7 +145,12 @@ export default function Layout() {
                     ) : (
                       <Link
                         to="/login"
+<<<<<<< HEAD:src/components/home/Layout.tsx
                         className="btn-secondary w-full flex items-center justify-center gap-2 py-2.5"
+=======
+                        className="btn-secondary"
+                        style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
+>>>>>>> ac34a0a3c7f9c418ea6ba540348a8e71016cf268:src/components/Layout.tsx
                         onClick={() => setIsMenuOpen(false)}
                       >
                         <LogIn className="w-4 h-4" />
@@ -144,13 +159,12 @@ export default function Layout() {
                     )}
                   </div>
                 </div>
-              </div>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      <Outlet />
-    </div>
+              )}
+            </nav>
+          </div>
+        </header>
+        <Outlet />
+      </div>
+    </>
   );
 }
