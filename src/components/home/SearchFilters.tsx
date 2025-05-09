@@ -1,33 +1,54 @@
 import React, { useState } from "react";
 
-const cities = ["Bangalore", "Hyderabad", "Chennai"];
-const areas = {
+// Define types
+
+type City = "Bangalore" | "Hyderabad" | "Chennai";
+type Category = "Ladies" | "Gents" | "Colive";
+type PreferredFor = "Students" | "Professionals" | "Anyone";
+
+type FiltersState = {
+  category?: Category;
+  preferredFor?: PreferredFor;
+  sharingType?: number;
+  amenity: string[];
+};
+
+const cities: City[] = ["Bangalore", "Hyderabad", "Chennai"];
+
+const areas: Record<City, string[]> = {
   Bangalore: ["Indiranagar", "Koramangala", "Whitefield"],
   Hyderabad: ["Madhapur", "Gachibowli", "Kukatpally"],
   Chennai: ["T. Nagar", "Velachery", "Adyar"],
 };
-const categories = ["Ladies", "Gents", "Colive"];
-const preferredFor = ["Students", "Professionals", "Anyone"];
-const sharingTypes = [1, 2, 3, 4, 5];
-const amenities = [
-  "WiFi", "Laundry", "TV", "Parking", "Power Backup", "Gym",
-  "AC", "Non-AC", "Attached Bathroom", "Food Service"
+
+const categories: Category[] = ["Ladies", "Gents", "Colive"];
+const preferredFor: PreferredFor[] = ["Students", "Professionals", "Anyone"];
+const sharingTypes: number[] = [1, 2, 3, 4, 5];
+const amenities: string[] = [
+  "WiFi",
+  "Laundry",
+  "TV",
+  "Parking",
+  "Power Backup",
+  "Gym",
+  "AC",
+  "Non-AC",
+  "Attached Bathroom",
+  "Food Service",
 ];
 
 export default function Filters() {
-  const [selectedCity, setSelectedCity] = useState("");
-  const [selectedArea, setSelectedArea] = useState("");
-  const [filters, setFilters] = useState({
-    amenity: [], // Make amenity an array to store multiple selections
-  });
+  const [selectedCity, setSelectedCity] = useState<City | "">("");
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [filters, setFilters] = useState<FiltersState>({ amenity: [] });
   const [showMobileFilters, setShowMobileFilters] = useState(false);
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = (key: keyof FiltersState, value: any) => {
     if (key === "amenity") {
       setFilters((prev) => {
         const newAmenities = prev[key].includes(value)
-          ? prev[key].filter((item) => item !== value) // Remove the amenity if it's already selected
-          : [...prev[key], value]; // Add the amenity if it's not selected
+          ? prev[key].filter((item) => item !== value)
+          : [...prev[key], value];
 
         return { ...prev, [key]: newAmenities };
       });
@@ -39,9 +60,7 @@ export default function Filters() {
   const resetFilters = () => {
     setSelectedCity("");
     setSelectedArea("");
-    setFilters({
-      amenity: [], // Reset amenity selection as well
-    });
+    setFilters({ amenity: [] });
   };
 
   const renderFilterSection = () => (
@@ -49,36 +68,45 @@ export default function Filters() {
       <select
         value={selectedCity}
         onChange={(e) => {
-          setSelectedCity(e.target.value);
+          setSelectedCity(e.target.value as City);
           setSelectedArea("");
         }}
-        className="w-full border p-2 rounded"
+        className="w-full border-2 border-black-200 font-semibold p-2 rounded-xl"
       >
         <option value="">Select City</option>
         {cities.map((city) => (
-          <option key={city} value={city}>{city}</option>
+          <option key={city} value={city}>
+            {city}
+          </option>
         ))}
       </select>
 
       <select
         value={selectedArea}
         onChange={(e) => setSelectedArea(e.target.value)}
-        className="w-full border p-2 rounded"
+        className="w-full border-2 border-black-200 font-semibold p-2 rounded-xl "
       >
         <option value="">Select Area</option>
-        {(selectedCity ? areas[selectedCity] : Object.values(areas).flat()).map((area) => (
-          <option key={area} value={area}>{area}</option>
+        {(selectedCity && areas[selectedCity]
+          ? areas[selectedCity]
+          : Object.values(areas).flat()
+        ).map((area) => (
+          <option key={area} value={area}>
+            {area}
+          </option>
         ))}
       </select>
 
       <div>
-        <h3 className="font-semibold mb-1">Category</h3>
-        <div className="flex flex-wrap gap-2">
+        <h3 className="text-blue-600 font-bold text-xl mb-5">Category</h3>
+        <div className="flex flex-wrap gap-4">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => handleFilterChange("category", cat)}
-              className={`px-3 py-1 rounded-full border ${filters.category === cat ? "bg-blue-600 text-white" : "hover:bg-blue-100"}`}
+              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
+                filters.category === cat ? "bg-blue-600 text-white " : "hover:bg-blue-100"
+              }`}
             >
               {cat}
             </button>
@@ -87,13 +115,15 @@ export default function Filters() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-1">Preferred For</h3>
-        <div className="flex flex-wrap gap-2">
+        <h3 className="text-blue-600 font-bold text-xl mb-5">Preferred For</h3>
+        <div className="flex flex-wrap gap-4">
           {preferredFor.map((pref) => (
             <button
               key={pref}
               onClick={() => handleFilterChange("preferredFor", pref)}
-              className={`px-3 py-1 rounded-full border ${filters.preferredFor === pref ? "bg-blue-600 text-white" : "hover:bg-blue-100"}`}
+              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
+                filters.preferredFor === pref ? "bg-blue-600 text-white" : "hover:bg-blue-100"
+              }`}
             >
               {pref}
             </button>
@@ -102,13 +132,15 @@ export default function Filters() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-1">Sharing Type</h3>
-        <div className="flex flex-wrap gap-2">
+        <h3 className="text-blue-600 font-bold text-xl mb-5">Sharing Type</h3>
+        <div className="flex flex-wrap gap-4">
           {sharingTypes.map((type) => (
             <button
               key={type}
               onClick={() => handleFilterChange("sharingType", type)}
-              className={`px-3 py-1 rounded-full border ${filters.sharingType === type ? "bg-blue-600 text-white" : "hover:bg-blue-100"}`}
+              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
+                filters.sharingType === type ? "bg-blue-600 text-white" : "hover:bg-blue-100"
+              }`}
             >
               {type} Sharing
             </button>
@@ -117,13 +149,15 @@ export default function Filters() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-1">Amenities</h3>
-        <div className="flex flex-wrap gap-2">
+        <h3 className="text-blue-600 font-bold text-xl mb-5">Amenities</h3>
+        <div className="flex flex-wrap gap-4">
           {amenities.map((item) => (
             <button
               key={item}
               onClick={() => handleFilterChange("amenity", item)}
-              className={`px-3 py-1 rounded-full border ${filters.amenity.includes(item) ? "bg-blue-600 text-white" : "hover:bg-blue-100"}`}
+              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
+                filters.amenity.includes(item) ? "bg-blue-600 text-white" : "hover:bg-blue-100"
+              }`}
             >
               {item}
             </button>
@@ -175,175 +209,6 @@ export default function Filters() {
       <div className="flex-1 p-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div><div className="p-4 border rounded shadow hover:shadow-lg transition">
             <p className="text-gray-600">Property 1</p>
           </div>
           <div className="p-4 border rounded shadow hover:shadow-lg transition">
