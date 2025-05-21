@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, Lock, ArrowRight } from 'lucide-react';
-import { toast } from 'sonner';
 import { useAuthStore } from './authStore';
 
 const schema = z.object({
@@ -37,16 +36,14 @@ export default function Login() {
 
       if (!response.ok) {
         if (response.status === 404) {
-          // If the account does not exist, prompt to create one
           if (
             window.confirm(
               'Account does not exist. Would you like to create an account?'
             )
           ) {
-            navigate('/register'); // Redirect to registration page
+            navigate('/register');
           }
         } else {
-          // For other errors (e.g., invalid password)
           const errorData = await response.json();
           throw new Error(errorData.message || 'Login failed');
         }
@@ -55,7 +52,6 @@ export default function Login() {
 
       const result = await response.json();
 
-      // Login the user
       login({
         id: result.user.id,
         email: result.user.email,
@@ -63,22 +59,29 @@ export default function Login() {
         type: result.user.userType,
       });
 
-      localStorage.setItem('token', result.token); // Store token for future requests
+      localStorage.setItem('token', result.token);
       alert('Login successful');
-      navigate('/'); // Redirect to homepage after login
-    } catch (error) {
+      navigate('/');
+    } catch (error: any) {
       console.error('Error during login:', error);
       alert(error.message || 'An error occurred');
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-73px)] flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white shadow-xl rounded-2xl p-8 space-y-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Welcome back!</h2>
-            <p className="mt-2 text-gray-600">Please sign in to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-white to-pink-100 px-2">
+      <div className="w-full max-w-md md:max-w-lg">
+        <div className="bg-white/90 shadow-2xl border border-gray-100 rounded-3xl p-6 sm:p-10 space-y-8 transition-all duration-300">
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-2 shadow-md">
+              <img
+                src="https://avatars.githubusercontent.com/u/9919?s=200&v=4"
+                alt="Logo"
+                className="w-10 h-10"
+              />
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome back!</h2>
+            <p className="mt-1 text-gray-600 text-sm sm:text-base">Please sign in to your account</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -93,19 +96,20 @@ export default function Login() {
                 <input
                   id="email"
                   type="email"
-                  className={`input-field pl-10 ${
+                  className={`input-field pl-10 pr-3 py-2 rounded-lg border transition focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 w-full ${
                     errors.email
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                      : ''
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-400'
+                      : 'border-gray-300'
                   }`}
                   placeholder="Enter your email"
                   {...register('email')}
                   disabled={isSubmitting}
+                  autoComplete="email"
                 />
                 <Mail className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               {errors.email && (
-                <p className="text-sm text-red-500 mt-1">
+                <p className="text-xs text-red-500 mt-1">
                   {errors.email.message}
                 </p>
               )}
@@ -122,25 +126,26 @@ export default function Login() {
                 <input
                   id="password"
                   type="password"
-                  className={`input-field pl-10 ${
+                  className={`input-field pl-10 pr-3 py-2 rounded-lg border transition focus:ring-2 focus:ring-indigo-400 focus:border-indigo-500 w-full ${
                     errors.password
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
-                      : ''
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-400'
+                      : 'border-gray-300'
                   }`}
                   placeholder="Enter your password"
                   {...register('password')}
                   disabled={isSubmitting}
+                  autoComplete="current-password"
                 />
                 <Lock className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
               </div>
               {errors.password && (
-                <p className="text-sm text-red-500 mt-1">
+                <p className="text-xs text-red-500 mt-1">
                   {errors.password.message}
                 </p>
               )}
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
               <div className="flex items-center">
                 <input
                   id="rememberMe"
@@ -157,7 +162,7 @@ export default function Login() {
               </div>
               <Link
                 to="/forgot-password"
-                className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+                className="text-sm font-medium text-indigo-600 hover:text-indigo-500 transition"
               >
                 Forgot password?
               </Link>
@@ -166,7 +171,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-2.5"
+              className="btn-primary w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-md transition disabled:opacity-60"
             >
               {isSubmitting ? (
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -184,7 +189,7 @@ export default function Login() {
               Don't have an account?{' '}
               <Link
                 to="/register"
-                className="font-medium text-indigo-600 hover:text-indigo-500"
+                className="font-medium text-indigo-600 hover:text-indigo-500 transition"
               >
                 Sign up now
               </Link>
