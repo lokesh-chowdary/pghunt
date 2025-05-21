@@ -1,224 +1,130 @@
-import React, { useState } from "react";
 
-// Define types
 
-type City = "Bangalore" | "Hyderabad" | "Chennai";
-type Category = "Ladies" | "Gents" | "Colive";
-type PreferredFor = "Students" | "Professionals" | "Anyone";
-
-type FiltersState = {
-  category?: Category;
-  preferredFor?: PreferredFor;
-  sharingType?: number;
-  amenity: string[];
+const initialFilters = {
+  type: "",
+  price: 0,
+  city: "",
+  amenities: {
+    wifi: false,
+    ac: false,
+    laundry: false,
+    parking: false,
+  },
 };
 
-const cities: City[] = ["Bangalore", "Hyderabad", "Chennai"];
-
-const areas: Record<City, string[]> = {
-  Bangalore: ["Indiranagar", "Koramangala", "Whitefield"],
-  Hyderabad: ["Madhapur", "Gachibowli", "Kukatpally"],
-  Chennai: ["T. Nagar", "Velachery", "Adyar"],
-};
-
-const categories: Category[] = ["Ladies", "Gents", "Colive"];
-const preferredFor: PreferredFor[] = ["Students", "Professionals", "Anyone"];
-const sharingTypes: number[] = [1, 2, 3, 4, 5];
-const amenities: string[] = [
-  "WiFi",
-  "Laundry",
-  "TV",
-  "Parking",
-  "Power Backup",
-  "Gym",
-  "AC",
-  "Non-AC",
-  "Attached Bathroom",
-  "Food Service",
-];
-
-export default function Filters() {
-  const [selectedCity, setSelectedCity] = useState<City | "">("");
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [filters, setFilters] = useState<FiltersState>({ amenity: [] });
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
-
-  const handleFilterChange = (key: keyof FiltersState, value: any) => {
-    if (key === "amenity") {
-      setFilters((prev) => {
-        const newAmenities = prev[key].includes(value)
-          ? prev[key].filter((item) => item !== value)
-          : [...prev[key], value];
-
-        return { ...prev, [key]: newAmenities };
-      });
-    } else {
-      setFilters((prev) => ({ ...prev, [key]: value }));
-    }
-  };
-
-  const resetFilters = () => {
-    setSelectedCity("");
-    setSelectedArea("");
-    setFilters({ amenity: [] });
-  };
-
-  const renderFilterSection = () => (
-    <div className="space-y-4">
-      <select
-        value={selectedCity}
-        onChange={(e) => {
-          setSelectedCity(e.target.value as City);
-          setSelectedArea("");
-        }}
-        className="w-full border-2 border-black-200 font-semibold p-2 rounded-xl"
-      >
-        <option value="">Select City</option>
-        {cities.map((city) => (
-          <option key={city} value={city}>
-            {city}
-          </option>
-        ))}
-      </select>
-
-      <select
-        value={selectedArea}
-        onChange={(e) => setSelectedArea(e.target.value)}
-        className="w-full border-2 border-black-200 font-semibold p-2 rounded-xl "
-      >
-        <option value="">Select Area</option>
-        {(selectedCity && areas[selectedCity]
-          ? areas[selectedCity]
-          : Object.values(areas).flat()
-        ).map((area) => (
-          <option key={area} value={area}>
-            {area}
-          </option>
-        ))}
-      </select>
-
-      <div>
-        <h3 className="text-blue-600 font-bold text-xl mb-5">Category</h3>
-        <div className="flex flex-wrap gap-4">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => handleFilterChange("category", cat)}
-              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
-                filters.category === cat ? "bg-blue-600 text-white " : "hover:bg-blue-100"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-blue-600 font-bold text-xl mb-5">Preferred For</h3>
-        <div className="flex flex-wrap gap-4">
-          {preferredFor.map((pref) => (
-            <button
-              key={pref}
-              onClick={() => handleFilterChange("preferredFor", pref)}
-              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
-                filters.preferredFor === pref ? "bg-blue-600 text-white" : "hover:bg-blue-100"
-              }`}
-            >
-              {pref}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-blue-600 font-bold text-xl mb-5">Sharing Type</h3>
-        <div className="flex flex-wrap gap-4">
-          {sharingTypes.map((type) => (
-            <button
-              key={type}
-              onClick={() => handleFilterChange("sharingType", type)}
-              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
-                filters.sharingType === type ? "bg-blue-600 text-white" : "hover:bg-blue-100"
-              }`}
-            >
-              {type} Sharing
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-blue-600 font-bold text-xl mb-5">Amenities</h3>
-        <div className="flex flex-wrap gap-4">
-          {amenities.map((item) => (
-            <button
-              key={item}
-              onClick={() => handleFilterChange("amenity", item)}
-              className={`px-3 py-1 rounded-lg border-2 border-black-200 font-semibold ${
-                filters.amenity.includes(item) ? "bg-blue-600 text-white" : "hover:bg-blue-100"
-              }`}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+const SearchFilters = ({ filters, setFilters }) => {
+  const handleClear = () => setFilters(initialFilters);
 
   return (
-    <div className="flex w-full">
-      <div className="hidden md:block w-[27%] p-4 sticky top-0 h-screen overflow-y-auto border-r border-gray-200 bg-white">
-        <div className="flex justify-between items-center mb-4 sticky top-[-17px] bg-white z-10 p-2 border-b">
-          <h2 className="text-blue-600 font-bold text-xl">Filters</h2>
-          <button
-            onClick={resetFilters}
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Reset
-          </button>
-        </div>
-        {renderFilterSection()}
-      </div>
+    <div
+      className="w-full max-w-full sm:w-3/12 p-4 border rounded shadow mb-4 sm:mb-0 sm:mr-4 bg-white"
+      style={{
+        maxHeight: "80vh",
+        overflowY: "auto",
+        position: "sticky",
+        top: "1rem",
+        alignSelf: "flex-start",
+        zIndex: 10,
+      }}
+    >
+      <h2 className="text-xl font-semibold mb-4">Search Filters</h2>
 
-      <div className="md:hidden fixed bottom-4 right-4 z-20">
-        <button
-          onClick={() => setShowMobileFilters(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg animate-bounce"
+      {/* Type Filter */}
+      <div className="mb-4">
+        <label htmlFor="typeFilter" className="block text-gray-700 font-medium mb-1">
+          PG Type
+        </label>
+        <select
+          id="typeFilter"
+          className="w-full border rounded p-2"
+          value={filters.type}
+          onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
         >
-          Filters
-        </button>
+          <option value="">All Types</option>
+          <option value="boys">Boys</option>
+          <option value="girls">Girls</option>
+          <option value="co-ed">Co-ed</option>
+        </select>
       </div>
 
-      {showMobileFilters && (
-        <div className="fixed inset-0 bg-white z-30 p-4 overflow-y-auto">
-          <div className="flex justify-between items-center mb-4 sticky top-0 bg-white z-40 p-2 border-b">
-            <h2 className="text-blue-600 font-bold text-xl">Filters</h2>
-            <button
-              onClick={() => setShowMobileFilters(false)}
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Close
-            </button>
-          </div>
-          {renderFilterSection()}
+      {/* Price Range Filter */}
+      <div className="mb-4">
+        <label htmlFor="priceFilter" className="block text-gray-700 font-medium mb-1">
+          Price Range
+        </label>
+        <input
+          type="range"
+          id="priceFilter"
+          min="0"
+          max="10000"
+          className="w-full"
+          value={filters.price}
+          onChange={e => setFilters(f => ({ ...f, price: Number(e.target.value) }))}
+        />
+        <div className="flex justify-between text-sm text-gray-600 mt-1">
+          <span>₹0</span>
+          <span>₹10,000+</span>
         </div>
-      )}
+        <div className="text-right text-xs text-gray-700 mt-1">
+          Selected: ₹{filters.price}
+        </div>
+      </div>
 
-      <div className="flex-1 p-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 1</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 2</p>
-          </div>
-          <div className="p-4 border rounded shadow hover:shadow-lg transition">
-            <p className="text-gray-600">Property 3</p>
-          </div>
+      {/* City Filter */}
+      <div className="mb-4">
+        <label htmlFor="cityFilter" className="block text-gray-700 font-medium mb-1">
+          City
+        </label>
+        <input
+          type="text"
+          id="cityFilter"
+          className="w-full border rounded p-2"
+          placeholder="Enter city..."
+          value={filters.city}
+          onChange={e => setFilters(f => ({ ...f, city: e.target.value }))}
+        />
+      </div>
+
+      {/* Amenities Filter */}
+      <div className="mb-4">
+        <label className="block text-gray-700 font-medium mb-1">Amenities</label>
+        <div className="flex flex-col gap-2 text-sm text-gray-600">
+          {Object.keys(filters.amenities).map((amenity) => (
+            <label key={amenity}>
+              <input
+                type="checkbox"
+                checked={filters.amenities[amenity]}
+                onChange={e =>
+                  setFilters(f => ({
+                    ...f,
+                    amenities: { ...f.amenities, [amenity]: e.target.checked },
+                  }))
+                }
+              />{" "}
+              {amenity.charAt(0).toUpperCase() + amenity.slice(1)}
+            </label>
+          ))}
         </div>
+      </div>
+
+      {/* Buttons */}
+      <div className="flex flex-col sm:flex-row gap-2">
+        <button
+          className="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+          onClick={() => console.log(filters)}
+        >
+          Apply Filters
+        </button>
+        <button
+          className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition"
+          onClick={handleClear}
+          type="button"
+        >
+          Clear
+        </button>
       </div>
     </div>
   );
-}
+};
+
+export default SearchFilters;
