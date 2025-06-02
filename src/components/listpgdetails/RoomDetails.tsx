@@ -1,4 +1,3 @@
-import React from "react";
 
 interface RoomDetailsProps {
   handleInputChange: (step: string, field: string, value: unknown) => void;

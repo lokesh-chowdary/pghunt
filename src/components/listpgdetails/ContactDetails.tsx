@@ -1,4 +1,3 @@
-import React from "react";
 
 interface ContactDetailsProps {
   handleInputChange: (step: string, field: string, value: unknown) => void;
