@@ -1,6 +1,12 @@
 import React from "react";
 
-const ContactDetails = ({ handleInputChange, handleNext, handleBack }) => {
+interface ContactDetailsProps {
+  handleInputChange: (step: string, field: string, value: unknown) => void;
+  handleNext: () => void;
+  handleBack: () => void;
+}
+
+const ContactDetails = ({ handleInputChange, handleNext, handleBack }: ContactDetailsProps) => {
   return (
     <div className="bg-white p-6 shadow w-full">
       <h2 className="text-2xl font-bold text-indigo-800 mb-4">Contact Details</h2>

@@ -1,28 +1,41 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SearchFilters from './SearchFilters';
+import type { PG } from '../../types';
 
-type PG = {
-  id: number;
-  name: string;
-  address: string;
-  city: string;
-  price: number;
-  rating: number;
+interface Amenities {
+  wifi: boolean;
+  ac: boolean;
+  geyser: boolean;
+  washingMachine: boolean;
+  lift: boolean;
+  parking: boolean;
+  gym: boolean;
+  fridge: boolean;
+  evCharging: boolean;
+}
+
+interface FilterState {
   type: string;
-  images: string | string[];
-  amenities?: string[];
-};
+  price: number;
+  city: string;
+  amenities: Amenities;
+}
 
-const initialFilters = {
+const initialFilters: FilterState = {
   type: "",
   price: 0,
   city: "",
   amenities: {
     wifi: false,
     ac: false,
-    laundry: false,
+    geyser: false,
+    washingMachine: false,
+    lift: false,
     parking: false,
+    gym: false,
+    fridge: false,
+    evCharging: false,
   },
 };
 
@@ -62,7 +75,9 @@ const PGList = () => {
       .map(([key]) => key);
 
     const matchesAmenities = selectedAmenities.every(amenity =>
-      pg.amenities?.includes(amenity)
+      pg.amenities.some(pgAmenity => 
+        pgAmenity.toLowerCase().includes(amenity.toLowerCase())
+      )
     );
 
     return matchesType && matchesCity && matchesPrice && matchesAmenities;
@@ -73,47 +88,60 @@ const PGList = () => {
   return (
     <div className="flex flex-col items-start justify-start min-h-screen mt-4 ml-4">
       <div className="flex w-full flex-col sm:flex-row">
-        
+
         {/* Filters Section */}
         <SearchFilters filters={filters} setFilters={setFilters} />
 
         {/* Cards Section */}
         <div className="w-full sm:w-9/12 grid grid-cols-1 sm:grid-cols-2 gap-4 pr-4">
-          {filteredPGs.slice(0, visibleCount).map((pg) => {
-            let image = '';
-            try {
-              const images = typeof pg.images === 'string' ? JSON.parse(pg.images) : pg.images;
-              image = images?.[0] || 'https://via.placeholder.com/150';
-            } catch (e) {
-              image = 'https://via.placeholder.com/150';
-            }
+          {filteredPGs.slice(0, visibleCount).map((pg: PG) => {
+            const image = pg.images?.[0] || 'https://via.placeholder.com/150';
 
             return (
               <div
                 key={pg.id}
-                className="p-4 border rounded shadow cursor-pointer"
-                onClick={() => window.location.href = `/pg/${pg.id}`}
-              >
-                <img
-                  src={image}
-                  alt={pg.name}
-                  className="w-full h-32 object-cover mb-2 rounded"
-                />
-                <h2 className="text-xl font-semibold mb-2">{pg.name}</h2>
-                <p className="text-gray-600 mb-1">{pg.address}, {pg.city}</p>
-                <p className="text-gray-600 mb-1">₹{pg.price}</p>
-                <p className="text-gray-600 mb-1">Rating: {pg.rating}</p>
-                <p className="text-gray-600 mb-1">Type: {pg.type}</p>
-                <div className="mt-2 text-sm text-gray-600">
-                  {pg.amenities?.length ? (
-                    <ul className="list-disc list-inside">
-                      {pg.amenities.map((item, index) => (
-                        <li key={index}>{item}</li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p>No amenities listed</p>
-                  )}
+                className="flex flex-col justify-between p-4 border rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 h-[330px] bg-white"
+                onClick={() => window.location.href = `/pg/${pg.id}`}>
+                <div>
+                  <img
+                    src={image}
+                    alt={pg.name}
+                    className="w-full h-40 object-cover rounded-md mb-3"
+                  />
+                 <div className="flex justify-between items-center mb-1">
+                   <h2 className="text-lg font-bold truncate">{pg.name}</h2>
+                   <p className="text-blue-700 font-semibold text-sm whitespace-nowrap ml-4">
+                   ₹{pg.price}
+                   </p>
+                </div>
+                <div className="flex justify-between items-center mb-1">
+                   <p className="text-gray-600 text-sm mb-1 truncate">
+                     {pg.address}, {pg.city}
+                   </p>
+                    <p className="text-gray-600 text-sm mb-2">Type: {pg.type}</p>
+                </div>   
+                    <p className="text-gray-600 text-sm mb-1">Rating: {pg.rating}</p>
+                <div className="text-xs text-gray-500">
+                      {pg.amenities.length > 0 ? (
+                 <div className="flex flex-wrap gap-2">
+                     {pg.amenities.slice(0, 4).map((item, index) => (
+                   <span
+                     key={index}
+                     className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
+                       {item}
+                   </span>
+                    ))}
+                   {pg.amenities.length > 4 && (
+                      <span className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
+                         +{pg.amenities.length - 4} more
+                     </span>
+                     )}
+                           </div>
+                      ) : (
+                      <p>No amenities listed</p>
+              )}
+               </div>
+
                 </div>
               </div>
             );

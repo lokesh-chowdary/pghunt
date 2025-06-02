@@ -11,7 +11,6 @@ import {
   Search, 
   Calendar, 
   ArrowRight, 
-  Star, 
   Check, 
   Home, 
   FileText, 
@@ -300,101 +299,6 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section className="py-16 px-6 lg:px-12 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
-            What Our <span className="text-gradient-primary">Users Say</span>
-          </h2>
-          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
-            Thousands of students and professionals have found their ideal PG accommodations through our platform.
-          </p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Testimonial 1 */}
-            <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-slide-in">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="https://randomuser.me/api/portraits/women/28.jpg" 
-                  alt="Priya Sharma"
-                  className="w-12 h-12 rounded-full mr-4 object-cover"
-                />
-                <div>
-                  <h4 className="font-semibold">Priya Sharma</h4>
-                  <p className="text-sm text-gray-500">Student, Delhi University</p>
-                </div>
-              </div>
-              
-              <p className="text-gray-600 mb-4">
-                "I was struggling to find a decent PG close to my college until I found PG Finder. The verified listings saved me from visiting fake properties, and I found my current PG within just 2 days!"
-              </p>
-              
-              <div className="flex items-center">
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-              </div>
-            </div>
-            
-            {/* Testimonial 2 */}
-            <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-slide-in" style={{ animationDelay: "0.2s" }}>
-              <div className="flex items-center mb-4">
-                <img 
-                  src="https://randomuser.me/api/portraits/men/32.jpg" 
-                  alt="Rahul Verma"
-                  className="w-12 h-12 rounded-full mr-4 object-cover"
-                />
-                <div>
-                  <h4 className="font-semibold">Rahul Verma</h4>
-                  <p className="text-sm text-gray-500">Software Engineer, Bangalore</p>
-                </div>
-              </div>
-              
-              <p className="text-gray-600 mb-4">
-                "As someone new to Bangalore, finding accommodation was a major concern. PG Finder's filters helped me locate a PG that offers home-cooked meals and is walking distance from my office."
-              </p>
-              
-              <div className="flex items-center">
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 text-gray-300" />
-              </div>
-            </div>
-            
-            {/* Testimonial 3 */}
-            <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-slide-in" style={{ animationDelay: "0.4s" }}>
-              <div className="flex items-center mb-4">
-                <img 
-                  src="https://randomuser.me/api/portraits/women/54.jpg" 
-                  alt="Sneha Patel"
-                  className="w-12 h-12 rounded-full mr-4 object-cover"
-                />
-                <div>
-                  <h4 className="font-semibold">Sneha Patel</h4>
-                  <p className="text-sm text-gray-500">Healthcare Professional, Mumbai</p>
-                </div>
-              </div>
-              
-              <p className="text-gray-600 mb-4">
-                "The virtual tours feature saved me so much time. I could shortlist PGs from another city before my move to Mumbai. The place I selected was exactly as shown in the photos!"
-              </p>
-              
-              <div className="flex items-center">
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-                <Star className="h-5 w-5 fill-current text-yellow-400" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* PG Owners Section */}
       <section className="py-16 px-6 lg:px-12 bg-gradient-to-r from-pgfinder-primary to-pgfinder-secondary text-white">
         <div className="container mx-auto max-w-6xl">
@@ -427,38 +331,52 @@ function HomePage() {
                 <ArrowRight size={18} />
               </button>
             </div>
-            <div className="flex-1 md:flex justify-center hidden">
-              <img 
-                src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?auto=format&fit=crop&w=1000" 
-                alt="PG interior" 
-                className="rounded-lg shadow-lg max-w-md w-full object-cover h-80"
-              />
-            </div>
+
+          {/* phone call form  */}
+
+  <div className="flex-1 flex justify-center">
+  <div className="bg-white text-black p-6 rounded-lg w-full md:w-3/4 shadow-md">
+    <h3 className="text-xl font-bold mb-4">Add your PG with a phone call</h3>
+    <form>
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">Name</label>
+        <input
+          type="text"
+          placeholder="Enter your name"
+          className="w-full border border-gray-300 rounded px-3 py-2"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">Mobile Number</label>
+        <input
+          type="tel"
+          placeholder="Enter your number"
+          className="w-full border border-gray-300 rounded px-3 py-2"
+        />
+      </div>
+      <div className="mb-4">
+        <label className="block mb-1 font-medium">When do you want a callback?</label>
+        <select className="w-full border border-gray-300 rounded px-3 py-2">
+          <option value="">Select time</option>
+          <option value="10min">Within 10 minutes</option>
+          <option value="1hr">Within 1 hour</option>
+          <option value="2hr">Within 2 hours</option>
+          <option value="custom">Later today</option>
+        </select>
+      </div>
+      <button
+        type="submit"
+        className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-900 font-medium transition-all-300 inline-flex items-center gap-2"
+      >
+        Request Callback
+      </button>
+    </form>
+  </div>
+</div>
+
           </div>
         </div>
       </section>
-      
-      {/* Big CTA Section */}
-      <section className="py-16 px-6 lg:px-12 bg-white text-center">
-        <div className="container mx-auto max-w-6xl">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-6">
-            Ready to Find Your Perfect PG?
-          </h2>
-          <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied users who found their ideal PG accommodation without any brokerage fees.
-          </p>
-          <button className="bg-gradient-primary hover:opacity-90 text-white text-lg py-4 px-10 rounded-md font-medium transition-all-300 inline-flex items-center gap-2">
-            Start Finding Your PG Now
-            <ArrowRight size={20} />
-          </button>
-        </div>
-      </section>
-
-
-      
-      
-      
-
      
     </div>
   );

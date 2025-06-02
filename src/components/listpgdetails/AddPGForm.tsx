@@ -2,14 +2,23 @@ import React, { useState } from "react";
 import { Camera, Contact, FolderPen, Home, ListCollapse, MapPin } from "lucide-react";  // Import Lucide Icons
 import RoomDetails from "./RoomDetails";
 import LocationDetails from "./LocationDetails";
-import PGDetails from "./PGDetails";
+import PGDetails from "./PgDetails";
 import ContactDetails from "./ContactDetails";
 import Photos from "./Photos";
 import Amenities from "./Amenities";
 
+interface FormData {
+  roomDetails: Record<string, unknown>;
+  locationDetails: Record<string, unknown>;
+  pgDetails: Record<string, unknown>;
+  contactDetails: Record<string, unknown>;
+  photos: Record<string, unknown>;
+  amenities: Record<string, unknown>;
+}
+
 const PostPG = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [, setFormData] = useState<FormData>({
     roomDetails: {},
     locationDetails: {},
     pgDetails: {},
@@ -18,18 +27,18 @@ const PostPG = () => {
     amenities: {},
   });
 
-  const handleInputChange = (step, field, value) => {
+  const handleInputChange = (step: string, field: string, value: unknown) => {
     setFormData((prev) => ({
       ...prev,
       [step]: {
-        ...prev[step],
+        ...(prev[step as keyof FormData] || {}),
         [field]: value,
       },
     }));
   };
 
   const handleNext = () => {
-    if (currentStep < 7) {
+    if (currentStep < 6) {
       setCurrentStep(currentStep + 1);
       window.scrollTo(0, 0);
     }

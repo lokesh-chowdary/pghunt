@@ -13,10 +13,16 @@ const amenitiesList = [
   "Power Backup",
 ];
 
-const Amenities = ({ handleInputChange, handleNext, handleBack }) => {
-  const [selectedAmenities, setSelectedAmenities] = useState([]);
+interface AmenitiesProps {
+  handleInputChange: (step: string, field: string, value: unknown) => void;
+  handleNext: () => void;
+  handleBack: () => void;
+}
 
-  const handleAmenityToggle = (amenity) => {
+const Amenities = ({ handleInputChange, handleNext, handleBack }: AmenitiesProps) => {
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
+
+  const handleAmenityToggle = (amenity: string) => {
     const updatedAmenities = selectedAmenities.includes(amenity)
       ? selectedAmenities.filter((item) => item !== amenity)
       : [...selectedAmenities, amenity];

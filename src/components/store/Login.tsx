@@ -62,9 +62,10 @@ export default function Login() {
       localStorage.setItem('token', result.token);
       alert('Login successful');
       navigate('/');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error during login:', error);
-      alert(error.message || 'An error occurred');
+      const errorMessage = error instanceof Error ? error.message : 'An error occurred';
+      alert(errorMessage);
     }
   };
 

@@ -1,6 +1,12 @@
 import React from "react";
 
-const LocationDetails = ({ handleInputChange, handleNext, handleBack }) => {
+interface LocationDetailsProps {
+  handleInputChange: (step: string, field: string, value: unknown) => void;
+  handleNext: () => void;
+  handleBack: () => void;
+}
+
+const LocationDetails = ({ handleInputChange, handleNext, handleBack }: LocationDetailsProps) => {
   return (
     <div className="bg-white p-6 shadow w-full">
       <h2 className="text-2xl font-bold text-indigo-800 mb-4">Location Details</h2>

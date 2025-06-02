@@ -1,20 +1,30 @@
 import React, { useState } from "react";
 
-const Photos = ({ handleInputChange, handleNext, handleBack }) => {
-  const [images, setImages] = useState([]);
+interface PhotosProps {
+  handleInputChange: (step: string, field: string, value: unknown) => void;
+  handleNext: () => void;
+  handleBack: () => void;
+}
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
+interface ImageFile extends File {
+  preview: string;
+}
+
+const Photos = ({ handleInputChange, handleNext, handleBack }: PhotosProps) => {
+  const [images, setImages] = useState<ImageFile[]>([]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
     const previewImages = files.map((file) =>
       Object.assign(file, {
         preview: URL.createObjectURL(file),
-      })
+      }) as ImageFile
     );
     setImages([...images, ...previewImages]);
     handleInputChange("photos", "images", [...images, ...files]);
   };
 
-  const removeImage = (index) => {
+  const removeImage = (index: number) => {
     const updatedImages = images.filter((_, i) => i !== index);
     setImages(updatedImages);
     handleInputChange("photos", "images", updatedImages);

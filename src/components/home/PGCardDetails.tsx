@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { MapPin, Star, Users, Wifi, Coffee, Car, Shield, Phone, Mail, BedDouble, Home, IndianRupee, Share2, Heart, CheckCircle2 } from 'lucide-react';
-import type { PG } from '../types';
+import { MapPin, Star, Users, Wifi, Coffee, Car, Shield, Home, Share2, Heart } from 'lucide-react';
+import type { PG } from '../../types';
 
 
 
@@ -15,7 +15,7 @@ Security: <Shield className="w-5 h-5" />,
 
 export default function PGCardDetails() {
 const { id } = useParams();
-const [activeImage, setActiveImage] = useState(0);
+const [activeImage] = useState(0);
 const [isWishlisted, setIsWishlisted] = useState(false);
 const [pg, setPg] = useState<PG | null>(null);
 const [loading, setLoading] = useState(true);
@@ -32,7 +32,7 @@ useEffect(() => {
       if (!response.ok) throw new Error(`Failed to fetch PG details`);
       const data = await response.json();
       setPg(data as PG);
-    } catch (err) {
+    } catch {
       setError('Failed to load PG details');
     } finally {
       setLoading(false);
@@ -109,21 +109,8 @@ return (
             <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-current text-red-500' : ''}`} />
           </button>
         </div>
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex space-x-2">
-          {images.map((img, idx) => (
-            <button
-              key={idx}
-              className={`w-3 h-3 rounded-full border ${idx === activeImage ? 'bg-indigo-600 border-indigo-600' : 'bg-gray-300 border-gray-400'}`}
-              onClick={() => setActiveImage(idx)}
-              aria-label={`Show image ${idx + 1}`}
-            />
-          ))}
-        </div>
       </div>
-    </div>
-    {/* Bottom: Details (2 columns on desktop) */}
-    <div className="bg-white rounded-lg shadow p-2 sm:p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
-      {/* Left: Main Info */}
+       {/* PG Name , Address , City , Rating PG , Type */}
       <div>
         <h1 className="text-2xl font-bold mb-2">{pg.name}</h1>
         <div className="flex items-center text-gray-600 mb-2 text-base flex-wrap">
@@ -138,7 +125,9 @@ return (
           <Users className="w-5 h-5 mr-1" />
           <span className="capitalize">{pg.type} PG</span>
         </div>
-        <div className="mb-4">
+      </div>
+      {/* Aminities */}
+       <div className="mb-4">
           <h2 className="font-semibold mb-1 text-lg">Amenities</h2>
           <div className="flex flex-wrap gap-2">
             {(pg.amenities || []).map((amenity) => (
@@ -148,56 +137,10 @@ return (
               </span>
             ))}
           </div>
-        </div>
-        <div className="mb-4">
-          <h2 className="font-semibold mb-1 text-lg">House Rules</h2>
-          <ul className="space-y-1">
-            {[
-              "No loud music after 10 PM",
-              "Visitors allowed only in common area",
-              "No smoking inside rooms",
-              "Keep common areas clean",
-              "Follow entry/exit timings"
-            ].map((rule, idx) => (
-              <li key={idx} className="flex items-center text-sm text-gray-700">
-                <CheckCircle2 className="w-4 h-4 mr-1 text-green-500" />
-                {rule}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      {/* Right: Pricing & Contact */}
-      <div className="flex flex-col justify-between h-full">
-        <div className="mb-6">
-          <h2 className="font-semibold mb-1 text-lg">Pricing Details</h2>
-          <div className="space-y-2">
-            <div className="flex justify-between text-base">
-              <span className="flex items-center"><IndianRupee className="w-4 h-4 mr-1" />Monthly Rent</span>
-              <span className="font-semibold">₹{(pg.price || 0).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-base">
-              <span className="flex items-center"><IndianRupee className="w-4 h-4 mr-1" />Security Deposit</span>
-              <span className="font-semibold">₹{((pg.price || 0) * 2).toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-base">
-              <span className="flex items-center"><IndianRupee className="w-4 h-4 mr-1" />Maintenance</span>
-              <span className="font-semibold">₹1,000</span>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-3 mt-2">
-          <button className="flex items-center justify-center px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 w-full sm:w-auto transition">
-            <Phone className="w-5 h-5 mr-1" />
-            Call Owner
-          </button>
-          <button className="flex items-center justify-center px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 w-full sm:w-auto transition">
-            <Mail className="w-5 h-5 mr-1" />
-            Send Message
-          </button>
-        </div>
-      </div>
+       </div>
+   
     </div>
+     
   </div>
 );
 }

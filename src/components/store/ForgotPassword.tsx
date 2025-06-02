@@ -18,12 +18,12 @@ export default function ForgotPassword() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async () => {
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
       toast.success('Password reset link sent to your email');
       navigate('/login');
-    } catch (error) {
+    } catch {
       toast.error('Failed to send reset link. Please try again.');
     }
   };

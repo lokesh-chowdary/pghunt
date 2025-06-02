@@ -1,6 +1,11 @@
 import React from "react";
 
-const RoomDetails = ({ handleInputChange, handleNext }) => {
+interface RoomDetailsProps {
+  handleInputChange: (step: string, field: string, value: unknown) => void;
+  handleNext: () => void;
+}
+
+const RoomDetails = ({ handleInputChange, handleNext }: RoomDetailsProps) => {
   return (
     <div className="bg-white p-6 shadow w-full">
       <h2 className="text-2xl font-bold text-indigo-800 mb-4">Room Details</h2>
