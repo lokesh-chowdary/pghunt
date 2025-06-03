@@ -8,7 +8,7 @@ import ForgotPassword from './components/store/ForgotPassword';
 import PGDetails from './components/home/PGCardDetails';
 import Footer from './components/footer/Footer';
 import HomePage from './components/HomePage';
-import AddPGForm from './components/AddPGForm';
+import AddPGForm from './components/listpgdetails/AddPGForm';
 
 function App() {
   return (
