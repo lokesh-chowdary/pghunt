@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { Building2, LogIn, Plus, Menu, X, LogOut, User } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
@@ -32,7 +32,7 @@ export default function Layout() {
             <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-600 group-hover:scale-110 transition-transform duration-200" />
           </div>
           <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent">
-            PG Hunt
+            PG Finder
           </h1>
             </Link>
 
