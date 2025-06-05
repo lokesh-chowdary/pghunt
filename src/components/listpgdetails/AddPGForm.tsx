@@ -1,161 +1,154 @@
-import React, { useState } from "react";
-import { Camera, Contact, FolderPen, Home, ListCollapse, MapPin } from "lucide-react";  // Import Lucide Icons
-import RoomDetails from "./RoomDetails";
-import LocationDetails from "./LocationDetails";
-import PGDetails from "./PgDetails";
-import ContactDetails from "./ContactDetails";
-import Photos from "./Photos";
-import Amenities from "./Amenities";
+import  { useState } from 'react';
+import ProgressBar from './ProgressBar';
+import Step1PGInfo from './Step1PGInfo';
+import Step2SharingRent from './Step2SharingRent';
+import Step3Amenities from './Step3Amenities';
+import Step4PricingMedia from './Step4PricingMedia';
+import Step5Preview from './Step5Preview';
+import SuccessScreen from './SuccessScreen';
 
-interface FormData {
-  roomDetails: Record<string, unknown>;
-  locationDetails: Record<string, unknown>;
-  pgDetails: Record<string, unknown>;
-  contactDetails: Record<string, unknown>;
-  photos: Record<string, unknown>;
-  amenities: Record<string, unknown>;
+export interface PGFormData {
+  // Step 1
+  pgName: string;
+  address: string;
+  city: string;
+  area: string;
+  category: string;
+  preferredFor: string;
+  phoneNumber: string;
+  whatsappNumber: string;
+  sameAsPhone: boolean;
+  mapLocation: string;
+  
+  // Step 2
+  sharingTypes: {
+    [key: string]: { enabled: boolean; rent: string };
+  };
+  
+  // Step 3
+  amenities: string[];
+  nearbyPlaces: string[];
+  
+  // Step 4
+  securityDeposit: string;
+  noticePeriod: string;
+  refundableOnExit: boolean;
+  images: File[];
+  youtubeLink: string;
 }
 
-const PostPG = () => {
+const Index = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [, setFormData] = useState<FormData>({
-    roomDetails: {},
-    locationDetails: {},
-    pgDetails: {},
-    contactDetails: {},
-    photos: {},
-    amenities: {},
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [formData, setFormData] = useState<PGFormData>({
+    pgName: '',
+    address: '',
+    category: '',
+    preferredFor: '',
+    city: '',
+    area: '',
+    phoneNumber: '',
+    whatsappNumber: '',
+    sameAsPhone: false,
+    mapLocation: '',
+    sharingTypes: {
+      '1': { enabled: false, rent: '' },
+      '2': { enabled: false, rent: '' },
+      '3': { enabled: false, rent: '' },
+      '4': { enabled: false, rent: '' },
+      '5': { enabled: false, rent: '' },
+    },
+    amenities: [],
+    nearbyPlaces: [],
+    securityDeposit: '',
+    noticePeriod: '',
+    refundableOnExit: false,
+    images: [],
+    youtubeLink: '',
   });
 
-  const handleInputChange = (step: string, field: string, value: unknown) => {
-    setFormData((prev) => ({
-      ...prev,
-      [step]: {
-        ...(prev[step as keyof FormData] || {}),
-        [field]: value,
-      },
-    }));
+  const updateFormData = (data: Partial<PGFormData>) => {
+    setFormData(prev => ({ ...prev, ...data }));
   };
 
-  const handleNext = () => {
-    if (currentStep < 6) {
+  const nextStep = () => {
+    if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
-      window.scrollTo(0, 0);
     }
+     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBack = () => {
+  const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
-      window.scrollTo(0, 0);
     }
+     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  return (
-    <div className="flex flex-col md:flex-row w-full bg-gray-100 min-h-screen pt-2">
-      {/* Left Sidebar - Steps with Icons */}
-      <div className="w-full md:w-1/5 bg-slate-200 border-r border-gray-200 p-4">
-        <ul>
-          <li
-            className={`cursor-pointer mb-2 p-2 flex items-center ${
-              currentStep === 1 ? "bg-indigo-200" : "hover:bg-gray-100"
-            }`}
-            onClick={() => setCurrentStep(1)}
-          >
-            <Home className="w-5 h-5 mr-2" />
-              Room Details
-          </li>
-          <li
-            className={`cursor-pointer mb-2 p-2 flex items-center ${
-              currentStep === 2 ? "bg-indigo-200" : "hover:bg-gray-100"
-            }`}
-            onClick={() => setCurrentStep(2)}
-          >
-            <MapPin className="w-5 h-5 mr-2" />
-             Location Details
-          </li>
-          <li
-            className={`cursor-pointer mb-2 p-2 flex items-center ${
-              currentStep === 3 ? "bg-indigo-200" : "hover:bg-gray-100"
-            }`}
-            onClick={() => setCurrentStep(3)}
-          >
-            <FolderPen className="w-5 h-5 mr-2" />
-              PG Details
-          </li>
-          <li
-            className={`cursor-pointer mb-2 p-2 flex items-center ${
-              currentStep === 4 ? "bg-indigo-200" : "hover:bg-gray-100"
-            }`}
-            onClick={() => setCurrentStep(4)}
-          >
-            <Contact className="w-5 h-5 mr-2" />
-             Contact Details
-          </li>
-          <li
-            className={`cursor-pointer mb-2 p-2 flex items-center ${
-              currentStep === 5 ? "bg-indigo-200" : "hover:bg-gray-100"
-            }`}
-            onClick={() => setCurrentStep(5)}
-          >
-            <Camera className="w-5 h-5 mr-2" />
-             Photos
-          </li>
-          <li
-            className={`cursor-pointer mb-2 p-2 flex items-center ${
-              currentStep === 6 ? "bg-indigo-200" : "hover:bg-gray-100"
-            }`}
-            onClick={() => setCurrentStep(6)}
-          >
-            <ListCollapse className="w-5 h-5 mr-2" />
-             Amenities
-          </li>
-        </ul>
-      </div>
+  const goToStep = (step: number) => {
+    setCurrentStep(step);
+  };
 
-      {/* Right Content */}
-      <div className="flex-1 overflow-auto">
-        {currentStep === 1 && (
-          <RoomDetails handleInputChange={handleInputChange} handleNext={handleNext} />
-        )}
-        {currentStep === 2 && (
-          <LocationDetails
-             handleInputChange={handleInputChange} 
-             handleNext={handleNext}
-             handleBack={handleBack}
+  const handleSubmit = () => {
+    console.log('Submitting PG listing:', formData);
+    setIsSubmitted(true);
+  };
+
+  if (isSubmitted) {
+    return <SuccessScreen />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="max-w-2xl mx-auto bg-white min-h-screen shadow-xl">
+        <ProgressBar currentStep={currentStep} totalSteps={5} />
+        
+        <div className="px-6 pb-6">
+          <div className="transition-all duration-300 ease-in-out">
+            {currentStep === 1 && (
+              <Step1PGInfo 
+                formData={formData} 
+                updateFormData={updateFormData}
+                onNext={nextStep}
               />
-        )}
-        {currentStep === 3 && (
-          <PGDetails 
-            handleInputChange={handleInputChange} 
-            handleNext={handleNext}
-            handleBack={handleBack}
-             />
-        )}
-        {currentStep === 4 && (
-          <ContactDetails
-            handleInputChange={handleInputChange}
-            handleNext={handleNext}
-            handleBack={handleBack}
-          />
-        )}
-        {currentStep === 5 && (
-          <Photos
-            handleInputChange={handleInputChange}
-            handleNext={handleNext}
-            handleBack={handleBack}
-          />
-        )}
-        {currentStep === 6 && (
-          <Amenities
-            handleInputChange={handleInputChange}
-            handleNext={handleNext}
-            handleBack={handleBack}
-          />
-        )}
+            )}
+            {currentStep === 2 && (
+              <Step2SharingRent 
+                formData={formData} 
+                updateFormData={updateFormData}
+                onNext={nextStep}
+                onPrev={prevStep}
+              />
+            )}
+            {currentStep === 3 && (
+              <Step3Amenities 
+                formData={formData} 
+                updateFormData={updateFormData}
+                onNext={nextStep}
+                onPrev={prevStep}
+              />
+            )}
+            {currentStep === 4 && (
+              <Step4PricingMedia 
+                formData={formData} 
+                updateFormData={updateFormData}
+                onNext={nextStep}
+                onPrev={prevStep}
+              />
+            )}
+            {currentStep === 5 && (
+              <Step5Preview 
+                formData={formData}
+                onPrev={prevStep}
+                onSubmit={handleSubmit}
+                goToStep={goToStep}
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default PostPG;
+export default Index;

@@ -127,7 +127,7 @@ return (
         </div>
       </div>
       {/* Aminities */}
-       <div className="mb-4">
+      <div className="mb-4">
           <h2 className="font-semibold mb-1 text-lg">Amenities</h2>
           <div className="flex flex-wrap gap-2">
             {(pg.amenities || []).map((amenity) => (
@@ -137,7 +137,7 @@ return (
               </span>
             ))}
           </div>
-       </div>
+      </div>
    
     </div>
      
