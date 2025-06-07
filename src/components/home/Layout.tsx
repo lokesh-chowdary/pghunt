@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Building2, LogIn, Plus, Menu, X, LogOut, User } from 'lucide-react';
+import { Building2, LogIn, Plus, Menu, X, LogOut, User, List } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
 
@@ -32,7 +32,7 @@ export default function Layout() {
             <Building2 className="h-6 w-6 sm:h-7 sm:w-7 text-indigo-600 group-hover:scale-110 transition-transform duration-200" />
           </div>
           <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-indigo-600 to-indigo-400 bg-clip-text text-transparent">
-            PG Hunt
+            PG Finder
           </h1>
             </Link>
 
@@ -60,6 +60,14 @@ export default function Layout() {
 
             {isProfileOpen && (
               <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 animate-fade-in">
+                <Link
+                  to="/your-listings"
+                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={() => setIsProfileOpen(false)}
+                >
+                  <List className="w-4 h-4" />
+                  Your Listings
+                </Link>
                 <button
               onClick={handleLogout}
               className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
@@ -119,6 +127,14 @@ export default function Layout() {
               >
                 <Plus className="w-4 h-4" />
                 List Your PG
+              </Link>
+              <Link
+                to="/your-listings"
+                className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <List className="w-4 h-4" />
+                Your Listings
               </Link>
               <button
                 onClick={() => {
