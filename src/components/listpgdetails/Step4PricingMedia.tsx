@@ -42,10 +42,26 @@ const Step4PricingMedia: React.FC<Step4Props> = ({ formData, updateFormData, onN
 
     if (!formData.securityDeposit) {
       newErrors.securityDeposit = 'Security deposit is required';
+    } else {
+      const deposit = parseFloat(formData.securityDeposit);
+      if (isNaN(deposit) || deposit < 0) {
+        newErrors.securityDeposit = 'Please enter a valid security deposit amount';
+      } else if (deposit > 10000000) { // 1 crore limit
+        newErrors.securityDeposit = 'Security deposit cannot exceed ₹1,00,00,000';
+      }
     }
+
     if (!formData.noticePeriod) {
       newErrors.noticePeriod = 'Notice period is required';
+    } else {
+      const period = parseInt(formData.noticePeriod);
+      if (isNaN(period) || period < 1) {
+        newErrors.noticePeriod = 'Notice period must be at least 1 day';
+      } else if (period > 365) { // 1 year limit
+        newErrors.noticePeriod = 'Notice period cannot exceed 365 days';
+      }
     }
+
     if (formData.images.length === 0) {
       newErrors.images = 'At least one image is required';
     }
@@ -91,6 +107,7 @@ const Step4PricingMedia: React.FC<Step4Props> = ({ formData, updateFormData, onN
                 }`}
                 placeholder="5000"
                 min="0"
+                max="10000000"
               />
               {errors.securityDeposit && <p className="text-red-500 text-sm mt-1">{errors.securityDeposit}</p>}
             </div>
@@ -108,6 +125,7 @@ const Step4PricingMedia: React.FC<Step4Props> = ({ formData, updateFormData, onN
                 }`}
                 placeholder="30"
                 min="1"
+                max="365"
               />
               {errors.noticePeriod && <p className="text-red-500 text-sm mt-1">{errors.noticePeriod}</p>}
             </div>

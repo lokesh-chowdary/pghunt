@@ -33,6 +33,7 @@ interface FilterState {
 interface SearchFiltersProps {
   filters: FilterState;
   setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+  onClose?: () => void;
 }
 
 const initialFilters: FilterState = {
@@ -64,8 +65,13 @@ const amenitiesList = [
   { key: 'evCharging', label: 'EV Charging', icon: BatteryCharging },
 ];
 
-const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) => {
+const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onClose }) => {
   const handleClear = () => setFilters(initialFilters);
+  
+  const handleApplyFilters = () => {
+    console.log(filters);
+    if (onClose) onClose(); // Close filters on mobile after applying
+  };
 
   const toggleAmenity = (key: keyof Amenities) => {
     setFilters(prev => ({
@@ -96,9 +102,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) =>
           onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
         >
           <option value="">All Types</option>
-          <option value="boys">Boys</option>
-          <option value="girls">Girls</option>
-          <option value="co-ed">Co-ed</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="colive">Colive</option>
         </select>
       </div>
 
@@ -155,7 +161,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters }) =>
       <div className="flex flex-col sm:flex-row gap-3 mt-6">
         <button
           className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-150"
-          onClick={() => console.log(filters)}
+          onClick={handleApplyFilters}
         >
           Apply Filters
         </button>
