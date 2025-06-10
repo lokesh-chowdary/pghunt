@@ -1,6 +1,6 @@
 import  { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Building2, LogIn, Plus, Menu, X, LogOut, User } from 'lucide-react';
+import { Building2, LogIn, Plus, Menu, X, LogOut, User, List } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
 
@@ -60,6 +60,14 @@ export default function Layout() {
 
             {isProfileOpen && (
               <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 animate-fade-in">
+                <Link
+                  to="/your-listings"
+                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={() => setIsProfileOpen(false)}
+                >
+                  <List className="w-4 h-4" />
+                  Your Listings
+                </Link>
                 <button
               onClick={handleLogout}
               className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
@@ -119,6 +127,14 @@ export default function Layout() {
               >
                 <Plus className="w-4 h-4" />
                 List Your PG
+              </Link>
+              <Link
+                to="/your-listings"
+                className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <List className="w-4 h-4" />
+                Your Listings
               </Link>
               <button
                 onClick={() => {

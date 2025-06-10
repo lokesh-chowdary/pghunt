@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone_number',
+        'user_type',
     ];
 
     /**
@@ -42,4 +44,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the PG listings for the user.
+     */
+    public function pgListings()
+    {
+        return $this->hasMany(PgListing::class);
+    }
 }

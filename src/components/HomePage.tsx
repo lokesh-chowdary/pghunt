@@ -27,7 +27,7 @@ function HomePage() {
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
-    navigate('/home'); // Assuming '/' is your home route
+    navigate('/search');
   };
 
   const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Pune', 'Hyderabad'];
