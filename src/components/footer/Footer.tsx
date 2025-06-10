@@ -1,4 +1,3 @@
-import React from "react";
 import { MapPin, Mail, Phone, Youtube } from "lucide-react";
 import { FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 
