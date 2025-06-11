@@ -105,9 +105,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onCl
           onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
         >
           <option value="">All Types</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="colive">Colive</option>
+            <option value="Gents">Male</option>
+            <option value="Ladies">Female</option>
+            <option value="co-living">Colive</option>
         </select>
       </div>
 
