@@ -16,6 +16,7 @@ interface Amenities {
   gym: boolean;
   fridge: boolean;
   evCharging: boolean;
+  food: boolean;
 }
 
 interface FilterState {
@@ -39,10 +40,11 @@ const initialFilters: FilterState = {
     gym: false,
     fridge: false,
     evCharging: false,
+    food: false,
   },
 };
 
-const PGList = () => {
+const Home = () => {
   const [pgs, setPgs] = useState<PG[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(4);
@@ -80,7 +82,7 @@ const PGList = () => {
     // Handle both old and new data structures
     const pgType = pg.type || pg.preferred_for;
     const matchesType = !filters.type || pgType === filters.type;
-    const matchesCity = !filters.city || pg.city.toLowerCase().includes(filters.city.toLowerCase());
+    const matchesCity = !filters.city || pg.city?.toLowerCase().includes(filters.city.toLowerCase());
     
     // Get price from sharing types or fallback to price field
     let pgPrice = pg.price || 0;
@@ -94,10 +96,10 @@ const PGList = () => {
       .filter(([, value]) => value)
       .map(([key]) => key);
 
-    const matchesAmenities = selectedAmenities.every(amenity =>
-      pg.amenities.some(pgAmenity => 
+    const matchesAmenities = selectedAmenities.length === 0 || selectedAmenities.every(amenity =>
+      pg.amenities?.some(pgAmenity => 
         pgAmenity.toLowerCase().includes(amenity.toLowerCase())
-      )
+      ) || false
     );
 
     return matchesType && matchesCity && matchesPrice && matchesAmenities;
@@ -131,78 +133,77 @@ const PGList = () => {
 
           {/* Cards Section */}
           <div className="w-full sm:w-9/12 grid grid-cols-1 sm:grid-cols-2 gap-4 pr-4">
-          {filteredPGs.slice(0, visibleCount).map((pg: PG) => {
-            // Handle both old and new data structures
-            const pgName = pg.pg_name || pg.name || 'PG';
-            const pgType = pg.type || pg.preferred_for;
-            
-            // Get the lowest price from sharing types or fallback to price field
-            let displayPrice = pg.price || 0;
-            if (pg.sharing_types && !pg.price) {
-              const enabledPrices = Object.values(pg.sharing_types)
-                .filter(sharing => sharing.enabled)
-                .map(sharing => parseInt(sharing.rent) || 0)
-                .filter(price => price > 0);
-              displayPrice = enabledPrices.length > 0 ? Math.min(...enabledPrices) : 0;
-            }
+            {filteredPGs.slice(0, visibleCount).map((pg: PG) => {
+              // Handle both old and new data structures
+              const pgName = pg.pg_name || pg.name || 'PG';
+              const pgType = pg.type || pg.preferred_for;
+              
+              // Get the lowest price from sharing types or fallback to price field
+              let displayPrice = pg.price || 0;
+              if (pg.sharing_types && !pg.price) {
+                const enabledPrices = Object.values(pg.sharing_types)
+                  .filter(sharing => sharing.enabled)
+                  .map(sharing => parseInt(sharing.rent) || 0)
+                  .filter(price => price > 0);
+                displayPrice = enabledPrices.length > 0 ? Math.min(...enabledPrices) : 0;
+              }
 
-            return (
-              <div
-                key={pg.id}
-                className="flex flex-col justify-between p-4 border rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 h-[330px] bg-white"
-                onClick={() => window.location.href = `/pg/${pg.id}`}>
-                <div>
-                  <img
-                    src={getFirstImageUrl(pg.images)}
-                    alt={pgName}
-                    className="w-full h-40 object-cover rounded-md mb-3"
-                    onError={handleImageError}
-                    loading="lazy"
-                  />
-                 <div className="flex justify-between items-center mb-1">
-                   <h2 className="text-lg font-bold truncate">{pgName}</h2>
-                   <p className="text-blue-700 font-semibold text-sm whitespace-nowrap ml-4">
-                     {displayPrice > 0 ? `₹${displayPrice}` : 'Price on request'}
-                   </p>
-                </div>
-                <div className="flex justify-between items-center mb-1">
-                   <p className="text-gray-600 text-sm mb-1 truncate">
-                     {pg.address}, {pg.city}
-                   </p>
-                    {pgType && (
-                      <p className="text-gray-600 text-sm mb-2 capitalize">
-                        {pgType}
+              return (
+                <div
+                  key={pg.id}
+                  className="flex flex-col justify-between p-4 border rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 h-[330px] bg-white"
+                  onClick={() => window.location.href = `/pg/${pg.id}`}>
+                  <div>
+                    <img
+                      src={getFirstImageUrl(pg.images)}
+                      alt={pgName}
+                      className="w-full h-40 object-cover rounded-md mb-3"
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+                    <div className="flex justify-between items-center mb-1">
+                      <h2 className="text-lg font-bold truncate">{pgName}</h2>
+                      <p className="text-blue-700 font-semibold text-sm whitespace-nowrap ml-4">
+                        {displayPrice > 0 ? `₹${displayPrice}` : 'Price on request'}
                       </p>
+                    </div>
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-gray-600 text-sm mb-1 truncate">
+                        {pg.address || 'Address not available'}, {pg.city || 'City not available'}
+                      </p>
+                      {pgType && (
+                        <p className="text-gray-600 text-sm mb-2 capitalize">
+                          {pgType}
+                        </p>
+                      )}
+                    </div>   
+                    {pg.rating && (
+                      <p className="text-gray-600 text-sm mb-1">Rating: {pg.rating}</p>
                     )}
-                </div>   
-                {pg.rating && (
-                  <p className="text-gray-600 text-sm mb-1">Rating: {pg.rating}</p>
-                )}
-                <div className="text-xs text-gray-500">
-                      {pg.amenities.length > 0 ? (
-                 <div className="flex flex-wrap gap-2">
-                     {pg.amenities.slice(0, 4).map((item, index) => (
-                   <span
-                     key={index}
-                     className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
-                       {item}
-                   </span>
-                    ))}
-                   {pg.amenities.length > 4 && (
-                      <span className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
-                         +{pg.amenities.length - 4} more
-                     </span>
-                     )}
-                           </div>
+                    <div className="text-xs text-gray-500">
+                      {pg.amenities && pg.amenities.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {pg.amenities.slice(0, 4).map((item, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
+                              {item}
+                            </span>
+                          ))}
+                          {pg.amenities.length > 4 && (
+                            <span className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
+                              +{pg.amenities.length - 4} more
+                            </span>
+                          )}
+                        </div>
                       ) : (
-                      <p>No amenities listed</p>
-              )}
-               </div>
-
+                        <p>No amenities listed</p>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
           </div>
         </div>
 
@@ -222,4 +223,4 @@ const PGList = () => {
   );
 };
 
-export default PGList;
+export default Home;

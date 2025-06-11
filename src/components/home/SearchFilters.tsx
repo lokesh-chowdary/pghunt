@@ -21,6 +21,7 @@ interface Amenities {
   gym: boolean;
   fridge: boolean;
   evCharging: boolean;
+  food: boolean;
 }
 
 interface FilterState {
@@ -50,6 +51,7 @@ const initialFilters: FilterState = {
     gym: false,
     fridge: false,
     evCharging: false,
+    food: false,
   },
 };
 
@@ -63,6 +65,7 @@ const amenitiesList = [
   { key: 'gym', label: 'Gym', icon: Dumbbell },
   { key: 'fridge', label: 'Fridge', icon: Tv },
   { key: 'evCharging', label: 'EV Charging', icon: BatteryCharging },
+  {key: 'food', label: 'Food', icon: Tv },
 ];
 
 const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onClose }) => {
@@ -102,9 +105,9 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onCl
           onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
         >
           <option value="">All Types</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="colive">Colive</option>
+            <option value="Gents">Male</option>
+            <option value="Ladies">Female</option>
+            <option value="co-living">Colive</option>
         </select>
       </div>
 
