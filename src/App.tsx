@@ -7,6 +7,7 @@ import Register from './components/store/Register';
 import ForgotPassword from './components/store/ForgotPassword';
 import PGDetails from './components/home/PGCardDetails';
 import YourListings from './components/home/YourListings';
+import UserProfile from './components/profile/UserProfile';
 import Footer from './components/footer/Footer';
 import HomePage from './components/HomePage';
 import AddPgForm from './components/listpgdetails/AddPgForm';
@@ -28,6 +29,7 @@ function App() {
             <Route path="/pg/:id" element={<PGDetails />} />
             <Route path="/list-your-pg" element={<ProtectedRoute><AddPgForm /></ProtectedRoute>} />
             <Route path="/your-listings" element={<ProtectedRoute><YourListings /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
           </Route>
         </Routes>
         <Footer />

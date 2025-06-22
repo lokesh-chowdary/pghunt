@@ -9,6 +9,7 @@ import {
 import type { PG } from '../../types';
 import { getAllImageUrls, handleImageError } from '../../utils/imageUtils';
 import { getApiUrl } from '../../config/api';
+import BackButton from '../common/BackButton';
 
 
 
@@ -180,6 +181,12 @@ if (error || !pg) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        
+        {/* Back Button */}
+        <div className="mb-6">
+          <BackButton text="Back" variant="outlined" />
+        </div>
+        
         <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
           {/* Image Gallery */}
             <div className="relative h-60 sm:h-[400px] overflow-hidden  shadow-lg">

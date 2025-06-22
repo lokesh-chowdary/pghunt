@@ -4,7 +4,7 @@ export const API_CONFIG = {
   ENDPOINTS: {
     LOGIN: '/login',
     REGISTER: '/register',
-    PG_LISTINGS: '/pg-listings',
+    PG_LISTINGS: '/listings', // Updated to match our backend route
     LOGOUT: '/logout',
   },
 } as const;
@@ -32,6 +32,8 @@ export const createAuthHeaders = (token?: string | null): HeadersInit => {
 export const createMultipartHeaders = (token?: string | null): HeadersInit => {
   const headers: HeadersInit = {
     'Accept': 'application/json',
+    // Important: Do NOT set Content-Type for multipart/form-data
+    // The browser will set it with the correct boundary
   };
 
   if (token) {

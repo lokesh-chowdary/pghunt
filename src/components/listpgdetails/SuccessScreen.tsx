@@ -1,4 +1,5 @@
 import React from 'react';
+import BackButton from '../common/BackButton';
 
 const SuccessScreen: React.FC = () => {
   return (
@@ -26,9 +27,16 @@ const SuccessScreen: React.FC = () => {
               Create Another Listing
             </button>
             
-            <button className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-300 transition-all duration-200">
+            <button
+              className="w-full bg-gray-200 text-gray-700 py-3 rounded-xl font-medium hover:bg-gray-300 transition-all duration-200"
+              onClick={() => window.location.href = '/your-listings'}
+            >
               View My Listings
             </button>
+            
+            <div className="mt-4">
+              <BackButton forceHome text="Back to Home" variant="minimal" className="w-full justify-center" />
+            </div>
           </div>
           
           <div className="mt-6 p-4 bg-blue-50 rounded-xl">

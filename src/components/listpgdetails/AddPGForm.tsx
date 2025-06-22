@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import ProgressBar from './ProgressBar';
 import Step1PGInfo from './Step1PGInfo';
@@ -8,6 +8,9 @@ import Step3Amenities from './Step3Amenities';
 import Step4PricingMedia from './Step4PricingMedia';
 import Step5Preview from './Step5Preview';
 import SuccessScreen from './SuccessScreen';
+import { apiService } from '../../services/apiService';
+import { toast } from 'sonner';
+import BackButton from '../common/BackButton';
 
 export interface PGFormData {
   // Step 1
@@ -42,8 +45,12 @@ export interface PGFormData {
 const Index = () => {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
+  const isEditMode = !!editId;
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  
   const [formData, setFormData] = useState<PGFormData>({
     pgName: '',
     address: '',
@@ -56,11 +63,11 @@ const Index = () => {
     sameAsPhone: false,
     mapLocation: '',
     sharingTypes: {
-      '1': { enabled: false, rent: '' },
-      '2': { enabled: false, rent: '' },
-      '3': { enabled: false, rent: '' },
-      '4': { enabled: false, rent: '' },
-      '5': { enabled: false, rent: '' },
+      'single': { enabled: false, rent: '' },
+      'double': { enabled: false, rent: '' },
+      'triple': { enabled: false, rent: '' },
+      'four': { enabled: false, rent: '' },
+      'five+': { enabled: false, rent: '' },
     },
     amenities: [],
     nearbyPlaces: [],
@@ -71,16 +78,76 @@ const Index = () => {
     youtubeLink: '',
   });
 
+  // Load PG data when in edit mode
+  useEffect(() => {
+    if (isEditMode && editId && user) {
+      const fetchPgData = async () => {
+        try {
+          setIsLoading(true);
+          const response = await apiService.get(`/edit-listing/${editId}?user_id=${user.id}`);
+          
+          if (response.success && response.data) {
+            // Transform API data to form format
+            const pgData = response.data;
+            
+            // Convert sharing types from array to object format
+            const sharingTypesObj: {[key: string]: {enabled: boolean, rent: string}} = {};
+            pgData.sharing_types.forEach((type: {type: string, enabled: boolean, rent: number | string}) => {
+              sharingTypesObj[type.type] = {
+                enabled: type.enabled,
+                rent: type.rent.toString()
+              };
+            });
+            
+            setFormData({
+              pgName: pgData.pg_name || '',
+              address: pgData.address || '',
+              category: pgData.category || '',
+              preferredFor: pgData.preferred_for || '',
+              city: pgData.city || '',
+              area: pgData.area || '',
+              phoneNumber: pgData.phone_number || '',
+              whatsappNumber: pgData.whatsapp_number || '',
+              sameAsPhone: pgData.phone_number === pgData.whatsapp_number,
+              mapLocation: '',
+              sharingTypes: sharingTypesObj,
+              amenities: pgData.amenities || [],
+              nearbyPlaces: pgData.nearby_places || [],
+              securityDeposit: pgData.security_deposit?.toString() || '',
+              noticePeriod: pgData.notice_period?.toString() || '',
+              refundableOnExit: pgData.refundable_on_exit || false,
+              images: pgData.images || [],
+              youtubeLink: pgData.youtube_link || '',
+            });
+            
+            toast.success('Listing loaded for editing');
+          } else {
+            toast.error('Failed to load listing data');
+            navigate('/your-listings');
+          }
+        } catch (error) {
+          console.error('Error fetching PG data:', error);
+          toast.error('Failed to load listing data');
+          navigate('/your-listings');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      
+      fetchPgData();
+    }
+  }, [isEditMode, editId, user, navigate]);
+
   // Check authentication on component mount
   useEffect(() => {
     if (!isAuthenticated) {
-      alert('Please login to list your PG');
+      toast.error('Please login to manage your PG listings');
       navigate('/login');
       return;
     }
     
     if (user?.user_type !== 'owner') {
-      alert('Only PG owners can list properties. Please register as a PG owner.');
+      toast.error('Only PG owners can list properties. Please register as a PG owner.');
       navigate('/register');
       return;
     }
@@ -135,6 +202,13 @@ const Index = () => {
         <ProgressBar currentStep={currentStep} totalSteps={5} />
         
         <div className="px-6 pb-6">
+          {/* Back Button */}
+          <div className="mb-4">
+            <BackButton 
+              text="Back" 
+              variant="minimal"
+            />
+          </div>
           <div className="transition-all duration-300 ease-in-out">
             {currentStep === 1 && (
               <Step1PGInfo 

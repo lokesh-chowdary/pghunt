@@ -5,6 +5,20 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
+// Debug routing issues
+if (isset($_GET['debug_routes'])) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'request_uri' => $_SERVER['REQUEST_URI'],
+        'request_method' => $_SERVER['REQUEST_METHOD'],
+        'php_self' => $_SERVER['PHP_SELF'],
+        'server_name' => $_SERVER['SERVER_NAME'],
+        'server_port' => $_SERVER['SERVER_PORT'],
+        'routes_debug' => 'This helps diagnose routing issues'
+    ]);
+    exit;
+}
+
 /*
 |--------------------------------------------------------------------------
 | Check If The Application Is Under Maintenance

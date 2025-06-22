@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import BackButton from '../common/BackButton';
 
 const schema = z.object({
   email: z.string().email('Please enter a valid email address'),
