@@ -16,3 +16,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+// Basic login route that just returns a view or redirects to SPA
+Route::get('/login', function() {
+    return redirect()->to('http://localhost:5173/login');
+})->name('login');

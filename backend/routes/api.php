@@ -3,52 +3,42 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PGController;
-
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| These are the API routes for your application. They are loaded by the
-| RouteServiceProvider within the "api" middleware group.
-|
-*/
+use App\Http\Controllers\PgListingController;
+use App\Http\Controllers\UserListingController;
+use App\Http\Controllers\UserProfileController;
+use \Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 // Public Routes (No authentication required)
 Route::group(['middleware' => ['cors']], function () {
-    // PG Listing and Creation
-    Route::get('/pgs', [PGController::class, 'index']); // List all PGs
-    Route::post('/pgs', [PGController::class, 'store']); // Create a new PG
-    Route::get('/pgs/{id}', [PGController::class, 'show']); // Fetch a single PG by ID - NEW
-
     // Authentication
-    Route::post('/register', [AuthController::class, 'register']); // User registration
-    Route::post('/login', [AuthController::class, 'login']); // User login
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 
-    // CSRF Cookie (Required for Laravel Sanctum)
-    Route::get('/sanctum/csrf-cookie', function () {
-        return response()->json(['csrf_token' => csrf_token()]);
-    });
+    // PG Listing (Public)
+    Route::get('/pgs', [PgListingController::class, 'index'])->missing(fn() =>
+        response()->json(['message' => 'Index method not implemented yet'], 501)
+    );
+    Route::get('/pgs/{id}', [PgListingController::class, 'show'])->missing(fn() =>
+        response()->json(['message' => 'Show method not implemented yet'], 501)
+    );
 
-    // Handle CORS preflight requests
-    Route::options('/{any}', function () {
-        return response()->json([], 204);
-    })->where('any', '.*');
+    // CSRF Cookie (Laravel Sanctum)
+    Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
+
+    // CORS preflight
+    Route::options('/{any}', fn() =>
+        response()->json([], 204)
+    )->where('any', '.*');
 });
 
 // Protected Routes (Require authentication via Sanctum)
 Route::middleware(['auth:sanctum'])->group(function () {
-    // Authenticated User Info
-    Route::get('/user', function (Request $request) {
-        return response()->json([
-            'id' => $request->user()->id,
-            'name' => $request->user()->name,
-            'email' => $request->user()->email,
-        ]);
-    });
-
-    // PG Management
-    Route::put('/pgs/{id}', [PGController::class, 'update']); // Update a PG
-    Route::delete('/pgs/{id}', [PGController::class, 'destroy']); // Delete a PG
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/user', [AuthController::class, 'user']);
+    Route::get('/profile', [UserProfileController::class, 'getProfile']);
+    Route::put('/profile', [UserProfileController::class, 'updateProfile']);
+    Route::get('/edit-listing/{id}', [PgListingController::class, 'editListing']);
+    Route::delete('/delete-listing/{id}', [PgListingController::class, 'destroy']);
+    Route::match(['put', 'post'], '/update-listing/{id}', [PgListingController::class, 'update']);
+    Route::get('/user-listings', [UserListingController::class, 'getUserListings']);
 });

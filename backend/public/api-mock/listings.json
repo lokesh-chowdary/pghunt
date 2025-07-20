@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "name": "Luxury PG in Koramangala",
+      "address": "123 Main Street, Koramangala",
+      "price": 12000,
+      "city": "Bangalore",
+      "area": "Koramangala",
+      "images": ["https://picsum.photos/640/480?random=1"],
+      "rating": 4.5,
+      "sharing_types": {
+        "single": {"enabled": true, "rent": 12000},
+        "double": {"enabled": true, "rent": 8000},
+        "triple": {"enabled": false, "rent": 0}
+      },
+      "roomTypes": ["single", "double"],
+      "occupancy": ["single", "double"],
+      "amenities": ["WiFi", "AC", "Geyser", "Food"]
+    },
+    {
+      "id": 2,
+      "name": "Budget PG in HSR Layout",
+      "address": "456 Park Avenue, HSR Layout",
+      "price": 8000,
+      "city": "Bangalore",
+      "area": "HSR Layout",
+      "images": ["https://picsum.photos/640/480?random=2"],
+      "rating": 4.0,
+      "sharing_types": {
+        "single": {"enabled": true, "rent": 8000},
+        "double": {"enabled": true, "rent": 6000},
+        "triple": {"enabled": true, "rent": 5000}
+      },
+      "roomTypes": ["single", "double", "triple"],
+      "occupancy": ["single", "double", "triple"],
+      "amenities": ["WiFi", "Geyser", "Food"]
+    }
+  ]
+}

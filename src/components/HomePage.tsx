@@ -1,25 +1,21 @@
 import React, { useState } from 'react';
 import { 
-  Search, 
   MapPin, 
   Building2, 
   ChevronDown, 
-  Phone, 
-  MessageSquare, 
-  Menu, 
   Navigation, 
-  Users, 
-  Bed, 
-  Building2 as PG,
   Clock as QuickStay,
-  Wrench,
-  Home as HomeService,
-  Key,
-  ClipboardCheck,
-  X,
   UserCircle2 as Male,
   UserCircle as Female,
-  Users2 as CoLive 
+  Users2 as CoLive,
+  Search, 
+  Calendar, 
+  ArrowRight, 
+  Check, 
+  Home, 
+  FileText, 
+  Shield, 
+  Heart 
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -28,11 +24,10 @@ function HomePage() {
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedArea, setSelectedArea] = useState('');
   const [propertyType, setPropertyType] = useState('Gents');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
-    navigate('/home'); // Assuming '/' is your home route
+    navigate('/search');
   };
 
   const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Pune', 'Hyderabad'];
@@ -46,18 +41,8 @@ function HomePage() {
     'Hyderabad': ['Hitech City', 'Gachibowli', 'Madhapur', 'Banjara Hills', 'Jubilee Hills']
   };
 
-  const stats = [
-    { icon: <PG className="h-12 w-12" />, count: '100+', label: 'PGs' },
-    { icon: <Bed className="h-12 w-12" />, count: '1000+', label: 'Beds' },
-    { icon: <Users className="h-12 w-12" />, count: '2000+', label: 'Users' }
-  ];
   
-  const services = [
-    { icon: <HomeService className="h-8 w-8" />, title: 'Home Services', desc: 'Painting, Cleaning & More' },
-    { icon: <Key className="h-8 w-8" />, title: 'Rental Agreement', desc: 'Rental agreement with digital signature' },
-    { icon: <Wrench className="h-8 w-8" />, title: 'Packers & Movers', desc: 'Verified moving partners' },
-    { icon: <ClipboardCheck className="h-8 w-8" />, title: 'Property Legal Services', desc: 'Documentation & advisory' },
-  ];
+  
 
   const handleCityChange = (city: string) => {
     setSelectedCity(city);
@@ -72,7 +57,7 @@ function HomePage() {
       <div className="relative">
         <div className="absolute inset-0">
          
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-pgfinder-primary to-pgfinder-secondary"></div>
         </div>
 
         <div className="relative container mx-auto px-4 py-20">
@@ -173,71 +158,234 @@ function HomePage() {
             Now You can search & List Your PG For Free
           </h1>
         </div>
-      
       </div>
 
-      {/* About Section */}
-      <div className="container mx-auto px-4 pt-32 py-16 sm:pt-5">
-        <h2 className="text-3xl font-bold text-center mt-8 mb-12">About Us</h2>
-        <div className="grid sm:grid-cols-2  md:grid-cols-3 gap-8">
-          <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-            <Users className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">100+</h3>
-            <p className="text-gray-600">Users.</p>
-          </div>
-          <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-            <Bed className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">1000+</h3>
-            <p className="text-gray-600">Beds.</p>
-          </div>
-          <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-            <Building2 className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">2000+</h3>
-            <p className="text-gray-600">PG's.</p>
-          </div>
-        </div>
-      </div>
-
-      
-      {/* Features Section */}
-      <div className="container mx-auto px-4 ">
-        <h2 className="text-3xl font-bold text-center mb-12">Why Choose Finder?</h2>
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-8">
-          <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-            <Phone className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Direct Contact With Owners</h3>
-            <p className="text-gray-600">Don't pay any brokerage. Deal directly with owners.</p>
-          </div>
-          <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-            <MessageSquare className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Verified Listings</h3>
-            <p className="text-gray-600">All our listings are physically verified.</p>
-          </div>
-          <div className="text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-            <Building2 className="h-12 w-12 mx-auto text-indigo-600 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Digital Rental Agreement</h3>
-            <p className="text-gray-600">Create rental agreement online with digital signatures.</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Services Section
-      <div className="bg-gray-100 py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Services</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {services.map((service, index) => (
-              <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                <div className="text-red-500 mb-4">{service.icon}</div>
-                <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
-                <p className="text-gray-600 text-sm">{service.desc}</p>
+       {/* How It Works Section */}
+      <section className="py-16 px-6 lg:px-12 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
+            How <span className="text-gradient-primary">PG Finder</span> Works
+          </h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Finding your ideal PG accommodation is just four simple steps away. No hassle, no brokerage.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* Step 1 */}
+            <div className="flex flex-col items-center text-center animate-fade-in">
+              <div className="w-16 h-16 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Search size={24} className="text-pgfinder-primary" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold mb-2">Search</h3>
+              <p className="text-gray-600">Enter your preferred location and requirements</p>
+              <div className="mt-4 hidden md:block">
+                <ArrowRight className="transform rotate-90 md:rotate-0 text-pgfinder-primary" />
+              </div>
+            </div>
+            
+            {/* Step 2 */}
+            <div className="flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <div className="w-16 h-16 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <FileText size={24} className="text-pgfinder-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Compare</h3>
+              <p className="text-gray-600">View verified listings with real photos and reviews</p>
+              <div className="mt-4 hidden md:block">
+                <ArrowRight className="transform rotate-90 md:rotate-0 text-pgfinder-primary" />
+              </div>
+            </div>
+            
+            {/* Step 3 */}
+            <div className="flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              <div className="w-16 h-16 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Check size={24} className="text-pgfinder-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Book</h3>
+              <p className="text-gray-600">Schedule a visit or book directly through our platform</p>
+              <div className="mt-4 hidden md:block">
+                <ArrowRight className="transform rotate-90 md:rotate-0 text-pgfinder-primary" />
+              </div>
+            </div>
+            
+            {/* Step 4 */}
+            <div className="flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.6s" }}>
+              <div className="w-16 h-16 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Home size={24} className="text-pgfinder-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Move-in</h3>
+              <p className="text-gray-600">Enjoy your new home with our support throughout your stay</p>
+            </div>
           </div>
         </div>
-      </div>
- */}
+      </section>
 
+      {/* Features Section */}
+      <section className="py-16 px-6 lg:px-12 bg-pgfinder-light">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
+            Features That Make Us <span className="text-gradient-primary">Different</span>
+          </h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            We've reimagined the PG hunting experience with features designed to make your search easier and more transparent.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* Feature 1 */}
+            <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in">
+              <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Heart size={24} className="text-pgfinder-accent" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">AI Recommendations</h3>
+              <p className="text-gray-600">
+                Our smart algorithms analyze your preferences to suggest the perfect PG options tailored to your needs.
+              </p>
+            </div>
+            
+            {/* Feature 2 */}
+            <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in" style={{ animationDelay: "0.2s" }}>
+              <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Calendar size={24} className="text-pgfinder-secondary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Real-time Availability</h3>
+              <p className="text-gray-600">
+                Check real-time vacancy status and book instantly. No more wasted visits to already-filled accommodations.
+              </p>
+            </div>
+            
+            {/* Feature 3 */}
+            <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+              <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Home size={24} className="text-pgfinder-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Flexible Stay Options</h3>
+              <p className="text-gray-600">
+                Find accommodations for short-term visits or long-term stays with flexible lease terms to match your needs.
+              </p>
+            </div>
+            
+            {/* Feature 4 */}
+            <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in" style={{ animationDelay: "0.6s" }}>
+              <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Shield size={24} className="text-pgfinder-secondary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Verified Listings</h3>
+              <p className="text-gray-600">
+                Every property on our platform is physically verified by our team to ensure listings match reality.
+              </p>
+            </div>
+            
+            {/* Feature 5 */}
+            <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in" style={{ animationDelay: "0.8s" }}>
+              <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <Search size={24} className="text-pgfinder-accent" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Advanced Filters</h3>
+              <p className="text-gray-600">
+                Filter options by budget, amenities, food preferences, gender-specific options, and much more.
+              </p>
+            </div>
+            
+            {/* Feature 6 */}
+            <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in" style={{ animationDelay: "1s" }}>
+              <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                <MapPin size={24} className="text-pgfinder-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Virtual Tours</h3>
+              <p className="text-gray-600">
+                Explore properties virtually with 360° tours and detailed photos before scheduling an in-person visit.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* PG Owners Section */}
+      <section className="py-16 px-6 lg:px-12 bg-gradient-to-r from-pgfinder-primary to-pgfinder-secondary text-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="flex flex-col md:flex-row items-center gap-8">
+            <div className="flex-1">
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4">Are You a PG Owner?</h2>
+              <p className="mb-6 text-white/90">
+                List your property on PG Finder and reach thousands of potential tenants. No commission, transparent process, and dedicated support.
+              </p>
+              <ul className="mb-6 space-y-2">
+                <li className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-white" />
+                  <span>Free listing with premium options available</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-white" />
+                  <span>Verified tenant profiles for better security</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-white" />
+                  <span>Manage bookings and payments through our platform</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-white" />
+                  <span>Dedicated support team for property owners</span>
+                </li>
+              </ul>
+              <button className="bg-white text-pgfinder-primary hover:bg-pgfinder-light py-3 px-8 rounded-md font-medium transition-all-300 inline-flex items-center gap-2">
+                List Your Property
+                <ArrowRight size={18} />
+              </button>
+            </div>
+          {/* phone call form  */}
+            <div className="flex-1 flex justify-center">
+                  <div className="bg-white text-black p-6 rounded-lg w-full md:w-3/4 shadow-md">
+                    <h3 className="text-xl font-bold mb-4">Add your PG with a phone call</h3>
+                     <form action="https://formspree.io/f/movwqyry" method="POST">
+                        <div className="mb-4">
+                          <label className="block mb-1 font-medium">Name</label>
+                          <input
+                            type="text"
+                            name="name"
+                            placeholder="Enter your name"
+                            required
+                            className="w-full border border-gray-300 rounded px-3 py-2"
+                          />
+                        </div>
+
+                        <div className="mb-4">
+                          <label className="block mb-1 font-medium">Mobile Number</label>
+                          <input
+                            type="tel"
+                            name="mobile_number"
+                            placeholder="Enter your number"
+                            required
+                            className="w-full border border-gray-300 rounded px-3 py-2"
+                          />
+                        </div>
+
+                        <div className="mb-4">
+                          <label className="block mb-1 font-medium">When do you want a callback?</label>
+                          <select
+                            name="callback_within"
+                            required
+                            className="w-full border border-gray-300 rounded px-3 py-2"
+                          >
+                            <option value="">Select time</option>
+                            <option value="10min">Within 10 minutes</option>
+                            <option value="1hr">Within 1 hour</option>
+                            <option value="2hr">Within 2 hours</option>
+                            <option value="custom">Later today</option>
+                          </select>
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-900 font-medium transition-all-300 inline-flex items-center gap-2"
+                        >
+                          Request Callback
+                        </button>
+                      </form>
+
+                  </div>
+            </div>
+          </div>
+        </div>
+      </section>
      
     </div>
   );

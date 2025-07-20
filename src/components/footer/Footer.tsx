@@ -1,64 +1,91 @@
-import { useState } from 'react';
-import { Facebook, FacebookIcon, Instagram, Twitter } from "lucide-react";
+import { MapPin, Mail, Phone, Youtube } from "lucide-react";
+import { FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
+
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 text-gray-200 p-4 md:p-12 lg:p-16">
-      <div className="container mx-auto flex flex-wrap justify-center md:justify-between md:flex-row gap-4 md:gap-8">
-        <div className="flex justify-center w-full md:w-1/4 xl:w-1/5">
-          <div className="text-center md:text-left">
-            <h5 className="uppercase text-lg font-bold mb-4">About Us</h5>
-            <p className="text-sm mb-4">Find comfortable and affordable PG accommodations with verified listings, amenities, and real photos in your preferred location.</p>
+    <footer className="bg-[#1A1F2C] text-white py-12 px-6 lg:px-12">
+      <div className="container mx-auto max-w-6xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Company Info */}
+          <div className="relative">
+            <h3 className="text-xl font-bold mb-4 text-center">PG Finder</h3>
+            <div className="relative text-[#C8C8C9]">
+              <p className="mb-4 text-center">
+                Find your perfect PG accommodation without brokerage fees. Verified listings, transparent process.
+              </p>
+              <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-t-8 border-l-transparent border-r-transparent border-t-[#1A1F2C]" />
+            </div>
+            <div className="mt-6 flex justify-center space-x-4 text-xl text-[#C8C8C9]">
+              <a href="#"><FaInstagram className="hover:text-white" /></a>
+              <a href="#"><FaLinkedin className="hover:text-white" /></a>
+              <a href="#"><FaTwitter className="hover:text-white" /></a>
+              <a href="#"><Youtube className="hover:text-white" size={22} /></a>
+            </div>
           </div>
-        </div>
-        <div className="flex justify-center w-full md:w-1/4 xl:w-1/5">
-          <div className="text-center md:text-left">
-            <h5 className="uppercase text-lg font-bold mb-4">Quick Links</h5>
-            <ul className="flex flex-wrap justify-center md:justify-start md:flex-col sm:flex-row gap-2 sm:gap-4 md:gap-0">
-              <li className="text-sm mb-2"><a href="/" className="hover:text-gray-100">Home</a></li>
-              <li className="text-sm mb-2"><a href="#" className="hover:text-gray-100">About</a></li>
-              <li className="text-sm mb-2"><a href="#" className="hover:text-gray-100">Contact</a></li>
+
+          {/* Quick Links */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-center">Quick Links</h3>
+            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm md:text-base">
+              {["About Us", "How It Works", "Our Services", "List Your Property", "Blog & Resources"].map(link => (
+                <li key={link}>
+                  <a href="#" className="text-[#C8C8C9] hover:text-white transition-colors">
+                    {link}
+                  </a>
+                </li>
+              ))}
             </ul>
           </div>
-        </div>
-        <div className="flex justify-center w-full md:w-1/4 xl:w-1/5">
-          <div className="text-center md:text-left">
-            <h5 className="uppercase text-lg font-bold mb-4">Contact Us</h5>
-            <p className="text-sm mb-2">Email: <a href="#" className="hover:text-gray-100">info@example.com</a></p>
-            <p className="text-sm mb-2">Phone: <a href="#" className="hover:text-gray-100">+1 123 456 7890</a></p>
-            <p className="text-sm mb-2">Address: <a href="#" className="hover:text-gray-100">123 Main St, Anytown, USA</a></p>
+
+          {/* Popular Cities */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-center">Popular Cities</h3>
+            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm md:text-base">
+              {["Delhi", "Mumbai", "Bangalore", "Hyderabad", "Chennai", "Pune", "Kolkata"].map(city => (
+                <li key={city}>
+                  <a href="#" className="text-[#C8C8C9] hover:text-white transition-colors">
+                    {city}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-        </div>
-        <div className="flex justify-center w-full md:w-1/4 xl:w-1/5">
-          <div className="text-center md:text-left">
-            <h5 className="uppercase text-lg font-bold mb-4">Follow Us</h5>
-            <div className="flex items-center justify-center md:justify-start">
-              <a href="#" className="mr-4 hover:text-gray-100">
-                <div className="bg-white-200 border-2 border-dashed rounded-xl w-8 h-8 flex items-center justify-center">
-                <div className=" lg:flex items-center gap-2">
-                <Facebook className="w-6 h-6" />
-                </div>
-                </div>
-              </a>
-              <a href="#" className="mr-4 hover:text-gray-100">
-                <div className="bg-white-200 border-2 border-dashed rounded-xl w-8 h-8 flex items-center justify-center">
-                <div className=" lg:flex items-center gap-2">
-                <Twitter className="w-6 h-6" />
-                </div>
-                </div>
-              </a>
-              <a href="#" className="mr-4 hover:text-gray-100">
-                <div className="bg-white-200 border-2 border-dashed rounded-xl w-8 h-8 flex items-center justify-center">
-                <div className=" lg:flex items-center gap-2">
-                <Instagram className="w-6 h-6" />
-                </div>
-                </div>
-              </a>
+
+          {/* Contact */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4 text-center">Contact Us</h3>
+            <div className="text-[#C8C8C9] text-sm space-y-4">
+              <div className="flex items-start gap-2">
+                <MapPin size={18} className="mt-1 flex-shrink-0" />
+                <span>123 Main Street, Koramangala, Bangalore - 560034</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Mail size={18} />
+                <a href="mailto:support@pgfinder.com" className="hover:text-white">
+                  support@pgfinder.com
+                </a>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={18} />
+                <a href="tel:+918012345678" className="hover:text-white">
+                  +91 8012345678
+                </a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div className="text-center mt-2">
-        <p className="text-sm">&copy; 2023 All rights reserved.</p>
+
+        {/* Bottom Footer */}
+        <div className="mt-12 pt-8 border-t border-[#403E43] flex flex-col md:flex-row justify-between items-center text-sm">
+          <p className="text-[#C8C8C9] mb-4 md:mb-0">
+            © {new Date().getFullYear()} PG Finder. All rights reserved.
+          </p>
+          <div className="flex flex-wrap gap-4">
+            <a href="#" className="text-[#C8C8C9] hover:text-white">Privacy Policy</a>
+            <a href="#" className="text-[#C8C8C9] hover:text-white">Terms of Service</a>
+            <a href="#" className="text-[#C8C8C9] hover:text-white">Cookie Policy</a>
+          </div>
+        </div>
       </div>
     </footer>
   );
