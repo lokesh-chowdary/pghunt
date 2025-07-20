@@ -17,32 +17,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Direct route for testing API issues
-Route::get('/test-listings', function () {
-    $routes = Route::getRoutes();
-    $routeList = [];
-    
-    foreach ($routes as $route) {
-        if (str_contains($route->uri, 'pgs') || str_contains($route->uri, 'user-listings')) {
-            $routeList[] = [
-                'uri' => $route->uri,
-                'methods' => $route->methods,
-                'action' => $route->getActionName()
-            ];
-        }
-    }
-    
-    return response()->json([
-        'success' => true,
-        'message' => 'Direct web route test for listings',
-        'routes' => $routeList,
-        'server' => [
-            'request_uri' => request()->getRequestUri(),
-            'base_url' => url('/'),
-            'api_url' => url('/api')
-        ]
-    ]);
-});
 
 // Basic login route that just returns a view or redirects to SPA
 Route::get('/login', function() {

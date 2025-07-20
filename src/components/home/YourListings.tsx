@@ -99,7 +99,7 @@ const YourListings = () => {
     }
 
     try {
-      if (!user) {
+      if (!user || !user.id) {
         toast.error('You need to be logged in to delete listings');
         navigate('/login', { state: { returnUrl: '/your-listings' } });
         return;
@@ -124,20 +124,20 @@ const YourListings = () => {
   
   // Handle editing a listing
   const handleEditListing = useCallback(async (pgId: number) => {
-    try {
-      if (!user) {
-        toast.error('You need to be logged in to edit listings');
-        navigate('/login', { state: { returnUrl: '/your-listings' } });
-        return;
-      }
-      
-      // Navigate to the edit page with the listing ID
-      navigate(`/list-your-pg?edit=${pgId}`);
-    } catch (err) {
-      console.error('Error navigating to edit page:', err);
-      toast.error(err instanceof Error ? err.message : 'Failed to open edit page');
+  try {
+    if (!user || !user.id) {
+      toast.error('You need to be logged in to edit listings');
+      navigate('/login', { state: { returnUrl: '/your-listings' } });
+      return;
     }
-  }, [user, navigate]);
+    
+    // Navigate to the edit page with the listing ID and user_id
+    navigate(`/list-your-pg?edit=${pgId}&user_id=${user.id}`);
+  } catch (err) {
+    console.error('Error navigating to edit page:', err);
+    toast.error(err instanceof Error ? err.message : 'Failed to open edit page');
+  }
+}, [user, navigate]);
 
   // Memoize helper functions to improve performance
   const getEnabledSharingTypes = useCallback((pg: PG) => {

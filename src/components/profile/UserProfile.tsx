@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { User, Mail, Phone, Lock, Save, Loader2 } from 'lucide-react';
 import { createMockUserProfile } from '../../utils/mockData';
 import BackButton from '../common/BackButton';
+import { getApiUrl } from '../../config/api';
 
 interface UserProfileData {
   id: number;
@@ -406,10 +407,7 @@ const UserProfile = () => {
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <h2 className="text-lg font-medium text-gray-900 mb-4">Account Information</h2>
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between py-2 border-b border-gray-100">
-                <span className="text-gray-500">Account ID</span>
-                <span className="font-medium">{profileData.id}</span>
-              </div>
+              
               <div className="flex justify-between py-2 border-b border-gray-100">
                 <span className="text-gray-500">Member Since</span>
                 <span className="font-medium">

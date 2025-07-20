@@ -162,12 +162,12 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onCl
 
       {/* Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 mt-6">
-        <button
+        {/* <button
           className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-150"
           onClick={handleApplyFilters}
         >
           Apply Filters
-        </button>
+        </button> */}
         <button
           type="button"
           className="w-full px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition duration-150"
