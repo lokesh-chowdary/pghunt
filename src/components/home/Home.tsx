@@ -1,139 +1,226 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, MapPin, Building2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 import SearchFilters from './SearchFilters';
-import PGCard from './PGCard';
 import type { PG } from '../../types';
+import { getFirstImageUrl, handleImageError } from '../../utils/imageUtils';
+import { getApiUrl } from '../../config/api';
+import { Filter, X } from 'lucide-react';
 
-interface Filters {
-  location?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  type?: string;
-  amenities?: Set<string>;
-  occupancy?: Set<string>;
+interface Amenities {
+  wifi: boolean;
+  ac: boolean;
+  geyser: boolean;
+  washingMachine: boolean;
+  lift: boolean;
+  parking: boolean;
+  gym: boolean;
+  fridge: boolean;
+  evCharging: boolean;
+  food: boolean;
 }
 
-export default function Home() {
-  const [pgs, setPgs] = useState<PG[]>([]); 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [locationInput, setLocationInput] = useState('');
-  const [pgInput, setPgInput] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
-  const [filters, setFilters] = useState<Filters>({
-    amenities: new Set(),
-    occupancy: new Set(),
-  });
+interface FilterState {
+  type: string;
+  price: number;
+  city: string;
+  amenities: Amenities;
+}
+
+const initialFilters: FilterState = {
+  type: "",
+  price: 0,
+  city: "",
+  amenities: {
+    wifi: false,
+    ac: false,
+    geyser: false,
+    washingMachine: false,
+    lift: false,
+    parking: false,
+    gym: false,
+    fridge: false,
+    evCharging: false,
+    food: false,
+  },
+};
+
+const Home = () => {
+  const [pgs, setPgs] = useState<PG[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [filters, setFilters] = useState(initialFilters);
+  const [showFilters, setShowFilters] = useState(false);
 
-  // Fetch PG data from the backend dynamically
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch('http://127.0.0.1:8000/api/pgs');
-        if (!response.ok) throw new Error('Failed to fetch PG data');
-        const data = await response.json();
-
-        // Ensure amenities and other fields are properly structured
-        const structuredData = data.map((pg: PG) => ({
-          ...pg,
-          amenities: Array.isArray(pg.amenities) ? pg.amenities : [],
-          occupancy: Array.isArray(pg.occupancy) ? pg.occupancy : [],
-        }));
-        setPgs(structuredData);
-      } catch (error: any) {
-        setError(error.message || 'An unknown error occurred.');
-      } finally {
+    axios.get(getApiUrl('/pgs'))
+      .then((response) => {
+        // Backend returns { success: true, data: [...] }
+        if (response.data.success && Array.isArray(response.data.data)) {
+          setPgs(response.data.data);
+        } else {
+          console.error("Invalid response format:", response.data);
+          setPgs([]);
+        }
         setLoading(false);
-      }
-    };
-
-    fetchData();
+      })
+      .catch((error) => {
+        console.error("Error fetching PG data:", error);
+        setPgs([]); // Ensure pgs is always an array
+        setLoading(false);
+      });
   }, []);
 
-  const handleSearch = () => {
-    setSearchTerm(`${locationInput} ${pgInput}`.trim());
-    setShowFilters(false);
+  useEffect(() => {
+    setVisibleCount(4); // Reset count when filters change
+  }, [filters]);
+
+  const handleShowMore = () => {
+    setVisibleCount((prev) => prev + 4);
   };
 
-  const handleFilterChange = (newFilters: Partial<Filters>) => {
-    setFilters((prev) => {
-      const updated = { ...prev };
+  const filteredPGs = (Array.isArray(pgs) ? pgs : []).filter(pg => {
+    // Handle both old and new data structures
+    const pgType = pg.type || pg.preferred_for;
+    const matchesType = !filters.type || pgType === filters.type;
+    const matchesCity = !filters.city || pg.city?.toLowerCase().includes(filters.city.toLowerCase());
+    
+    // Get price from sharing types or fallback to price field
+    let pgPrice = pg.price || 0;
+    if (pg.sharing_types && !pg.price) {
+      const enabledSharing = Object.values(pg.sharing_types).find(sharing => sharing.enabled);
+      pgPrice = enabledSharing ? parseInt(enabledSharing.rent) || 0 : 0;
+    }
+    const matchesPrice = pgPrice >= filters.price;
 
-      if ('amenity' in newFilters) {
-        const amenity = newFilters.amenity as string;
-        const newAmenities = new Set(prev.amenities);
-        if (newFilters.checked) {
-          newAmenities.add(amenity);
-        } else {
-          newAmenities.delete(amenity);
-        }
-        updated.amenities = newAmenities;
-      }
+    const selectedAmenities = Object.entries(filters.amenities)
+      .filter(([, value]) => value)
+      .map(([key]) => key);
 
-      if ('occupancy' in newFilters) {
-        const occupancy = newFilters.occupancy as string;
-        const newOccupancy = new Set(prev.occupancy);
-        if (newFilters.checked) {
-          newOccupancy.add(occupancy);
-        } else {
-          newOccupancy.delete(occupancy);
-        }
-        updated.occupancy = newOccupancy;
-      }
+    const matchesAmenities = selectedAmenities.length === 0 || selectedAmenities.every(amenity =>
+      pg.amenities?.some(pgAmenity => 
+        pgAmenity.toLowerCase().includes(amenity.toLowerCase())
+      ) || false
+    );
 
-      if ('location' in newFilters) updated.location = newFilters.location as string;
-      if ('minPrice' in newFilters) updated.minPrice = Number(newFilters.minPrice) || undefined;
-      if ('maxPrice' in newFilters) updated.maxPrice = Number(newFilters.maxPrice) || undefined;
-      if ('type' in newFilters) updated.type = newFilters.type as string;
+    return matchesType && matchesCity && matchesPrice && matchesAmenities;
+  });
 
-      return updated;
-    });
-  };
-
-  const filteredPGs = useMemo(() => {
-    return pgs.filter((pg) => {
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch =
-        !searchTerm ||
-        pg.name.toLowerCase().includes(searchLower) ||
-        pg.address.toLowerCase().includes(searchLower) ||
-        pg.city.toLowerCase().includes(searchLower);
-      if (!matchesSearch) return false;
-
-      if (filters.location && !pg.address.toLowerCase().includes(filters.location.toLowerCase())) {
-        return false;
-      }
-
-      if (filters.minPrice && pg.price < filters.minPrice) return false;
-      if (filters.maxPrice && pg.price > filters.maxPrice) return false;
-
-      if (filters.type && pg.type !== filters.type) return false;
-
-      if (filters.amenities?.size > 0) {
-        const hasAllAmenities = Array.from(filters.amenities).every((amenity) =>
-          pg.amenities.includes(amenity)
-        );
-        if (!hasAllAmenities) return false;
-      }
-
-      if (filters.occupancy?.size > 0) {
-        const hasMatchingOccupancy = Array.from(filters.occupancy).some((occ) =>
-          pg.occupancy.includes(occ)
-        );
-        if (!hasMatchingOccupancy) return false;
-      }
-
-      return true;
-    });
-  }, [searchTerm, filters, pgs]);
+  if (loading) return <p className="text-center mt-10 text-lg">Loading PGs...</p>;
 
   return (
-    <div className="">
-     
-     <SearchFilters />
+    <div className="min-h-screen">
+      {/* Mobile Filter Toggle Button */}
+      <div className="sm:hidden sticky top-0 z-20 bg-white border-b border-gray-200 p-4">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          {showFilters ? <X className="w-4 h-4" /> : <Filter className="w-4 h-4" />}
+          {showFilters ? 'Close Filters' : 'Show Filters'}
+        </button>
+      </div>
+
+      <div className="flex flex-col items-start justify-start mt-4 ml-4">
+        <div className="flex w-full flex-col sm:flex-row">
+          {/* Filters Section */}
+          <div className={`${showFilters ? 'block' : 'hidden'} sm:block`}>
+            <SearchFilters 
+              filters={filters} 
+              setFilters={setFilters} 
+              onClose={() => setShowFilters(false)}
+            />
+          </div>
+
+          {/* Cards Section */}
+          <div className="w-full sm:w-9/12 grid grid-cols-1 sm:grid-cols-2 gap-4 pr-4">
+            {filteredPGs.slice(0, visibleCount).map((pg: PG) => {
+              // Handle both old and new data structures
+              const pgName = pg.pg_name || pg.name || 'PG';
+              const pgType = pg.type || pg.preferred_for;
+              
+              // Get the lowest price from sharing types or fallback to price field
+              let displayPrice = pg.price || 0;
+              if (pg.sharing_types && !pg.price) {
+                const enabledPrices = Object.values(pg.sharing_types)
+                  .filter(sharing => sharing.enabled)
+                  .map(sharing => parseInt(sharing.rent) || 0)
+                  .filter(price => price > 0);
+                displayPrice = enabledPrices.length > 0 ? Math.min(...enabledPrices) : 0;
+              }
+
+              return (
+                <div
+                  key={pg.id}
+                  className="flex flex-col justify-between p-4 border rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-all duration-300 h-[330px] bg-white"
+                  onClick={() => window.location.href = `/pg/${pg.id}`}>
+                  <div>
+                    <img
+                      src={getFirstImageUrl(pg.images)}
+                      alt={pgName}
+                      className="w-full h-40 object-cover rounded-md mb-3"
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+                    <div className="flex justify-between items-center mb-1">
+                      <h2 className="text-lg font-bold truncate">{pgName}</h2>
+                      <p className="text-blue-700 font-semibold text-sm whitespace-nowrap ml-4">
+                        {displayPrice > 0 ? `₹${displayPrice}` : 'Price on request'}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center mb-1">
+                      <p className="text-gray-600 text-sm mb-1 truncate">
+                        {pg.address || 'Address not available'}, {pg.city || 'City not available'}
+                      </p>
+                      {pgType && (
+                        <p className="text-gray-600 text-sm mb-2 capitalize">
+                          {pgType}
+                        </p>
+                      )}
+                    </div>   
+                    {pg.rating && (
+                      <p className="text-gray-600 text-sm mb-1">Rating: {pg.rating}</p>
+                    )}
+                    <div className="text-xs text-gray-500">
+                      {pg.amenities && pg.amenities.length > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {pg.amenities.slice(0, 4).map((item, index) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
+                              {item}
+                            </span>
+                          ))}
+                          {pg.amenities.length > 4 && (
+                            <span className="px-2 py-1 rounded bg-blue-100 text-black text-xs inline-flex items-center gap-1.5">
+                              +{pg.amenities.length - 4} more
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <p>No amenities listed</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Show More Button */}
+        {visibleCount < filteredPGs.length && (
+          <div className="w-full flex justify-center mt-6">
+            <button
+              onClick={handleShowMore}
+              className="px-6 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition"
+            >
+              Click More
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
-}
+};
+
+export default Home;
