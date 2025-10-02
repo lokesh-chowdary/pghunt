@@ -36,14 +36,13 @@ export default function Layout() {
             PG Finder
           </h1>
             </Link>
-
             {/* Desktop navigation */}
             {!isAuthPage && (
-          <div className="hidden lg:flex items-center gap-4">
-            {isAuthenticated && (
+            <div className="hidden lg:flex items-center gap-4">
+            {isAuthenticated && user?.user_type === 'owner' && (
               <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
-            <Plus className="w-4 h-4" />
-            List Your PG
+              <Plus className="w-4 h-4" />
+              List Your PG
               </Link>
             )}
 
