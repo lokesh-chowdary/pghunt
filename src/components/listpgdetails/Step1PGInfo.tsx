@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PGFormData } from './AddPgForm';
 
 interface Step1Props {
@@ -10,13 +10,17 @@ interface Step1Props {
 const Step1PGInfo: React.FC<Step1Props> = ({ formData, updateFormData, onNext }) => {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
-  const memoizedUpdateFormData = useCallback(updateFormData, [updateFormData]);
+  // Don't memoize updateFormData as it's already stable from parent
+  // This was causing infinite loop by creating a new function on every render
 
-  useEffect(() => {
-    if (formData.sameAsPhone) {
-      memoizedUpdateFormData({ whatsappNumber: formData.phoneNumber });
-    }
-  }, [formData.sameAsPhone, formData.phoneNumber, memoizedUpdateFormData]);
+  // Handle checkbox change for WhatsApp number being same as phone number
+  const handleSameAsPhoneChange = (checked: boolean) => {
+    const newValue = checked ? formData.phoneNumber : '';
+    updateFormData({ 
+      sameAsPhone: checked,
+      whatsappNumber: newValue 
+    });
+  };
   useEffect(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
                    }, []);                 
@@ -188,7 +192,7 @@ const Step1PGInfo: React.FC<Step1Props> = ({ formData, updateFormData, onNext })
               type="checkbox"
               id="sameAsPhone"
               checked={formData.sameAsPhone}
-              onChange={(e) => updateFormData({ sameAsPhone: e.target.checked })}
+              onChange={(e) => handleSameAsPhoneChange(e.target.checked)}
               className="w-4 h-4 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500"
             />
             <label htmlFor="sameAsPhone" className="ml-2 text-sm font-medium text-gray-700">

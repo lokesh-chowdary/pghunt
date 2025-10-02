@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Phone, ArrowRight, UserCheck } from 'lucide-react';
 import { useAuthStore } from './authStore';
 import { getApiUrl, createAuthHeaders, API_CONFIG } from '../../config/api';
+import BackButton from '../common/BackButton';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -104,6 +105,11 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4 py-8">
       <div className="w-full max-w-lg">
+        {/* Back Button */}
+        <div className="mb-4">
+          <BackButton text="Back" variant="minimal" />
+        </div>
+        
         <div className="bg-white shadow-2xl rounded-2xl p-8 space-y-8 border border-gray-100">
           {/* Header */}
           <div className="text-center">

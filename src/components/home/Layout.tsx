@@ -1,8 +1,9 @@
 import  { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Building2, LogIn, Plus, Menu, X, LogOut, User, List } from 'lucide-react';
+import { Building2, LogIn, Plus, Menu, X, LogOut, User, List, UserCircle } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
+import DevModeToggle from '../common/DevModeToggle';
 
 export default function Layout() {
   const location = useLocation();
@@ -61,6 +62,14 @@ export default function Layout() {
             {isProfileOpen && (
               <div className="absolute left-0 mt-2 w-48 bg-white rounded-xl shadow-lg py-1 border border-gray-100 animate-fade-in">
                 <Link
+                  to="/profile"
+                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={() => setIsProfileOpen(false)}
+                >
+                  <UserCircle className="w-4 h-4" />
+                  Your Profile
+                </Link>
+                <Link
                   to="/your-listings"
                   className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                   onClick={() => setIsProfileOpen(false)}
@@ -69,11 +78,11 @@ export default function Layout() {
                   Your Listings
                 </Link>
                 <button
-              onClick={handleLogout}
-              className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                  onClick={handleLogout}
+                  className="w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 flex items-center gap-2"
                 >
-              <LogOut className="w-4 h-4" />
-              Sign out
+                  <LogOut className="w-4 h-4" />
+                  Sign out
                 </button>
               </div>
             )}
@@ -129,6 +138,14 @@ export default function Layout() {
                 List Your PG
               </Link>
               <Link
+                to="/profile"
+                className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <UserCircle className="w-4 h-4" />
+                Your Profile
+              </Link>
+              <Link
                 to="/your-listings"
                 className="w-full btn-secondary flex items-center justify-center gap-2 py-2.5 mt-2"
                 onClick={() => setIsMenuOpen(false)}
@@ -166,6 +183,7 @@ export default function Layout() {
         </header>
 
         <Outlet />
+        <DevModeToggle />
       </div>
     </>
   );

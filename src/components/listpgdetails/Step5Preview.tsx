@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PGFormData } from './AddPgForm';
 import { useAuthStore } from '../store/authStore';
 import { getApiUrl, createMultipartHeaders, API_CONFIG } from '../../config/api';
+import { useSearchParams } from 'react-router-dom';
 
 interface Step5Props {
   formData: PGFormData;
@@ -11,7 +12,10 @@ interface Step5Props {
 }
 
 const Step5Preview: React.FC<Step5Props> = ({ formData, onPrev, onSubmit, goToStep }) => {
-  const { token } = useAuthStore();
+  const { token, user } = useAuthStore();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
+  const [isEditMode] = useState(!!editId);
   const amenitiesList = [
     { id: 'wifi', name: 'WiFi', icon: '📶' },
     { id: 'food', name: 'Food', icon: '🍽️' },
@@ -65,6 +69,7 @@ const Step5Preview: React.FC<Step5Props> = ({ formData, onPrev, onSubmit, goToSt
         });
 
         return {
+          user_id: user?.id, // Include user ID for backend validation
           pg_name: data.pgName,
           address: data.address,
           category: data.category,
@@ -90,6 +95,11 @@ const Step5Preview: React.FC<Step5Props> = ({ formData, onPrev, onSubmit, goToSt
 
       // Create FormData for multipart request
       const formDataToSend = new FormData();
+      // Always ensure user_id is included and sent as an integer
+      if (user?.id) {
+        formDataToSend.append('user_id', String(user.id));
+      }
+      
       // Append all fields, using backend field names
       Object.entries(backendData).forEach(([key, value]) => {
         if (key === 'images' && Array.isArray(value)) {
@@ -116,19 +126,49 @@ const Step5Preview: React.FC<Step5Props> = ({ formData, onPrev, onSubmit, goToSt
         }
       });
 
-      // Debug: Log what's being sent
-      console.log('FormData contents:');
-      for (let [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
+      // Debug: Log what's being sent (only in development)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('FormData contents:');
+        for (const [key, value] of formDataToSend.entries()) {
+          console.log(key, value);
+        }
       }
 
+      // Use the actual endpoints for creating or updating
+      let endpoint = API_CONFIG.ENDPOINTS.PG_LISTINGS;
+      let method = 'POST';
+      
+      if (isEditMode && editId) {
+        // For updating, use the update-listing endpoint
+        // Note: Using POST instead of PUT because FormData has better compatibility with POST
+        endpoint = `/update-listing/${editId}`;
+        // method = 'PUT'; // This can cause issues with FormData in some browsers
+        method = 'POST'; // Using POST is more reliable with FormData
+        console.log(`Updating listing ID: ${editId}`);
+      } else {
+        console.log('Creating new listing');
+      }
+      
+      // Log the exact API URL and method
+      const apiUrl = getApiUrl(endpoint);
+      console.log(`API Request: ${method} ${apiUrl}`);
+      
+      // For debugging - log headers
+      const headers = createMultipartHeaders(token);
+      console.log('Request headers:', headers);
+      
       // Send formData to Laravel API
-      const response = await fetch(getApiUrl(API_CONFIG.ENDPOINTS.PG_LISTINGS), {
-        method: 'POST',
-        headers: createMultipartHeaders(token),
+      const response = await fetch(apiUrl, {
+        method: method,
+        headers: headers,
         body: formDataToSend,
+      }).catch(error => {
+        console.error('Network error:', error);
+        throw new Error('Network error occurred. Please check your connection.');
       });
-
+      
+      console.log('Response status:', response.status, response.statusText);
+      
       if (!response.ok) {
         let errorMsg = 'Failed to save PG listing to database';
         try {
@@ -143,24 +183,33 @@ const Step5Preview: React.FC<Step5Props> = ({ formData, onPrev, onSubmit, goToSt
           } else {
             errorMsg = errorData.error || errorData.message || errorMsg;
           }
-        } catch {}
+        } catch (e) {
+          console.error('Error parsing response:', e);
+        }
         throw new Error(errorMsg);
       }
 
       const result = await response.json();
       console.log('Successfully saved to database:', result);
       onSubmit();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error saving PG listing:', error);
-      alert(error.message || 'Failed to save PG listing. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save PG listing. Please try again.';
+      alert(errorMessage);
     }
   };
 
   return (
     <div className="py-6 animate-fade-in">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Preview Your Listing</h2>
-        <p className="text-gray-600">Review all details before publishing</p>
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">
+          {isEditMode ? 'Edit Your Listing' : 'Preview Your Listing'}
+        </h2>
+        <p className="text-gray-600">
+          {isEditMode 
+            ? `You are editing listing #${editId}. Review all details before updating.` 
+            : 'Review all details before publishing'}
+        </p>
       </div>
 
       <div className="space-y-6">
@@ -305,7 +354,7 @@ const Step5Preview: React.FC<Step5Props> = ({ formData, onPrev, onSubmit, goToSt
           onClick={handlePublish}
           className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
         >
-          🚀 Publish PG Listing
+          {isEditMode ? '💾 Update PG Listing' : '🚀 Publish PG Listing'}
         </button>
       </div>
     </div>
