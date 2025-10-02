@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PgListingController;
 use App\Http\Controllers\UserListingController;
 use App\Http\Controllers\UserProfileController;
+use App\Http\Controllers\CallbackController;
 use \Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 // Public Routes (No authentication required)
@@ -29,6 +30,8 @@ Route::group(['middleware' => ['cors']], function () {
     Route::options('/{any}', fn() =>
         response()->json([], 204)
     )->where('any', '.*');
+    Route::post('/request-callback', [CallbackController::class, 'send']);
+
 });
 
 // Protected Routes (Require authentication via Sanctum)
