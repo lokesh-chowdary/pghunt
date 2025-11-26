@@ -1,11 +1,9 @@
-import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail, ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
-import BackButton from '../common/BackButton';
 
 const schema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -13,19 +11,37 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>;
 
+// Configurable API base URL (adjust for your Laravel backend)
+const API_BASE_URL = 'http://localhost:8000'; // Change to your backend port (e.g., 8000 for php artisan serve)
+
 export default function ForgotPassword() {
   const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = async () => {
+  const onSubmit = async (data: FormData) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const response = await fetch(`${API_BASE_URL}/api/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: data.email }),
+      });
+
+      console.log('Response status:', response.status); // Temp log for debugging
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Invalid email address. Please check and try again.');
+      }
+
       toast.success('Password reset link sent to your email');
       navigate('/login');
-    } catch {
-      toast.error('Failed to send reset link. Please try again.');
+    } catch (error: any) {
+      console.error('Full error:', error); // Temp log for debugging
+      toast.error(error.message || 'Failed to send reset link. Please try again.');
     }
   };
 

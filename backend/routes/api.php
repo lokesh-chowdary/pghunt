@@ -14,7 +14,7 @@ Route::group(['middleware' => ['cors']], function () {
     // Authentication
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
-
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     // PG Listing (Public)
     Route::get('/pgs', [PgListingController::class, 'index'])->missing(fn() =>
         response()->json(['message' => 'Index method not implemented yet'], 501)
