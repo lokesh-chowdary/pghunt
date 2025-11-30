@@ -107,4 +107,47 @@ class AuthController extends Controller
             ],
         ], 200);
     }
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->email;
+
+        // Check if user exists (but don't reveal in response for security)
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Invalid email address'], 400);
+        }
+
+        // Generate and store reset token (Laravel's default table: password_reset_tokens)
+        $token = \Illuminate\Support\Str::random(60); // Secure random token
+
+        // Delete any old tokens for this user
+        \DB::table('password_reset_tokens')->where('email', $email)->delete();
+
+        // Store new token
+        \DB::table('password_reset_tokens')->insert([
+            'email' => $email,
+            'token' => hash('sha256', $token), // Hash the token for storage (Laravel standard)
+            'created_at' => now(),
+        ]);
+
+        // Send email (use a Mailable or simple Mail::raw)
+        $resetUrl = config('app.frontend_url', 'http://localhost:3000') . '/reset-password?token=' . $token . '&email=' . urlencode($email);
+
+        try {
+            \Mail::raw("Click here to reset your password: {$resetUrl}\nThis link expires in 1 hour.", function ($message) use ($email) {
+                $message->to($email)
+                        ->subject('Password Reset Request');
+            });
+        } catch (\Exception $e) {
+            \Log::error('Failed to send reset email: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send reset link. Please try again.'], 500);
+        }
+
+        return response()->json(['message' => 'Password reset link sent to your email'], 200);
+    }
 }
