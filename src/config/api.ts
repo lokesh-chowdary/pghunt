@@ -1,6 +1,6 @@
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: 'http://172.31.43.229:8000/api',
+  BASE_URL: 'http://13.60.183.89:8000/api',
   ENDPOINTS: {
     LOGIN: '/login',
     REGISTER: '/register',
