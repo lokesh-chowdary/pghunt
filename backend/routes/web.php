@@ -2,6 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 
+<<<<<<< HEAD
+// Serve React app only for the root URL
+Route::get('/{any}', function () {
+    return file_get_contents(public_path('index.html'));
+})->where('any', '^(?!api).*$');
+=======
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -22,3 +28,4 @@ Route::get('/', function () {
 Route::get('/login', function() {
     return redirect()->to('http://localhost:5173/login');
 })->name('login');
+>>>>>>> origin/lokesh-dev

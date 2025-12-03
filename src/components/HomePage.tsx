@@ -155,7 +155,7 @@ function HomePage() {
             </div>
           </div>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold pt-16 text-white text-center mb-8">
-            Now You can search & List 
+            Now You can search & List Your PG For Free
           </h1>
         </div>
       </div>
