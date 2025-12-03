@@ -333,81 +333,56 @@ function HomePage() {
             </div>
           {/* phone call form  */}
             <div className="flex-1 flex justify-center">
-              <div className="bg-white text-black p-6 rounded-lg w-full md:w-3/4 shadow-md">
-                <h3 className="text-xl font-bold mb-4">Add your PG with a phone call</h3>
-                <form
-                onSubmit={async (e) => {
-                  e.preventDefault();
-                  const form = e.target; // store the form reference
-                  const formData = new FormData(form);
+                  <div className="bg-white text-black p-6 rounded-lg w-full md:w-3/4 shadow-md">
+                    <h3 className="text-xl font-bold mb-4">Add your PG with a phone call</h3>
+                     <form action="https://formspree.io/f/movwqyry" method="POST">
+                        <div className="mb-4">
+                          <label className="block mb-1 font-medium">Name</label>
+                          <input
+                            type="text"
+                            name="name"
+                            placeholder="Enter your name"
+                            required
+                            className="w-full border border-gray-300 rounded px-3 py-2"
+                          />
+                        </div>
 
-                  try {
-                    const response = await fetch(`${import.meta.env.VITE_API_URL}/request-callback`, {
-                      method: "POST",
-                      body: formData,
-                    });
+                        <div className="mb-4">
+                          <label className="block mb-1 font-medium">Mobile Number</label>
+                          <input
+                            type="tel"
+                            name="mobile_number"
+                            placeholder="Enter your number"
+                            required
+                            className="w-full border border-gray-300 rounded px-3 py-2"
+                          />
+                        </div>
 
-                    if (response.ok) {
-                      alert("Callback request sent successfully!");
-                      form.reset(); // <-- reset the form fields
-                    } else {
-                      alert("Something went wrong, please try again.");
-                    }
-                  } catch (error) {
-                    console.error(error);
-                    alert("Something went wrong, please try again.");
-                  }
-                }}
-              >
+                        <div className="mb-4">
+                          <label className="block mb-1 font-medium">When do you want a callback?</label>
+                          <select
+                            name="callback_within"
+                            required
+                            className="w-full border border-gray-300 rounded px-3 py-2"
+                          >
+                            <option value="">Select time</option>
+                            <option value="10min">Within 10 minutes</option>
+                            <option value="1hr">Within 1 hour</option>
+                            <option value="2hr">Within 2 hours</option>
+                            <option value="custom">Later today</option>
+                          </select>
+                        </div>
 
+                        <button
+                          type="submit"
+                          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-900 font-medium transition-all-300 inline-flex items-center gap-2"
+                        >
+                          Request Callback
+                        </button>
+                      </form>
 
-                  <div className="mb-4">
-                    <label className="block mb-1 font-medium">Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      placeholder="Enter your name"
-                      required
-                      className="w-full border border-gray-300 rounded px-3 py-2"
-                    />
                   </div>
-
-                  <div className="mb-4">
-                    <label className="block mb-1 font-medium">Mobile Number</label>
-                    <input
-                      type="tel"
-                      name="mobile_number"
-                      placeholder="Enter your number"
-                      required
-                      className="w-full border border-gray-300 rounded px-3 py-2"
-                    />
-                  </div>
-
-                  <div className="mb-4">
-                    <label className="block mb-1 font-medium">When do you want a callback?</label>
-                    <select
-                      name="callback_within"
-                      required
-                      className="w-full border border-gray-300 rounded px-3 py-2"
-                    >
-                      <option value="">Select time</option>
-                      <option value="10min">Within 10 minutes</option>
-                      <option value="1hr">Within 1 hour</option>
-                      <option value="2hr">Within 2 hours</option>
-                      <option value="custom">Later today</option>
-                    </select>
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-900 font-medium transition-all-300 inline-flex items-center gap-2"
-                  >
-                    Request Callback
-                  </button>
-                </form>
-              </div>
             </div>
-
           </div>
         </div>
       </section>

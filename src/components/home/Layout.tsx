@@ -36,6 +36,7 @@ export default function Layout() {
             PG Finder
           </h1>
             </Link>
+<<<<<<< HEAD
             {/* Desktop navigation */}
             {!isAuthPage && (
             <div className="hidden lg:flex items-center gap-4">
@@ -43,6 +44,16 @@ export default function Layout() {
               <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
               <Plus className="w-4 h-4" />
               List Your PG
+=======
+
+            {/* Desktop navigation */}
+            {!isAuthPage && (
+          <div className="hidden lg:flex items-center gap-4">
+            {isAuthenticated && (
+              <Link to="/list-your-pg" className="btn-primary flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            List Your PG
+>>>>>>> origin/lokesh-dev
               </Link>
             )}
 

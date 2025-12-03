@@ -6,7 +6,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PgListingController;
 use App\Http\Controllers\UserListingController;
 use App\Http\Controllers\UserProfileController;
+<<<<<<< HEAD
 use App\Http\Controllers\CallbackController;
+=======
+>>>>>>> origin/lokesh-dev
 use \Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 // Public Routes (No authentication required)
@@ -14,7 +17,11 @@ Route::group(['middleware' => ['cors']], function () {
     // Authentication
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+<<<<<<< HEAD
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+=======
+
+>>>>>>> origin/lokesh-dev
     // PG Listing (Public)
     Route::get('/pgs', [PgListingController::class, 'index'])->missing(fn() =>
         response()->json(['message' => 'Index method not implemented yet'], 501)
@@ -30,8 +37,11 @@ Route::group(['middleware' => ['cors']], function () {
     Route::options('/{any}', fn() =>
         response()->json([], 204)
     )->where('any', '.*');
+<<<<<<< HEAD
     Route::post('/request-callback', [CallbackController::class, 'send']);
 
+=======
+>>>>>>> origin/lokesh-dev
 });
 
 // Protected Routes (Require authentication via Sanctum)
