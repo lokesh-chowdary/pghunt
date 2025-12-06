@@ -1,20 +1,39 @@
 import React, { useState, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { 
-  MapPin, Star, Wifi, Coffee, Car, Shield, Home, Share2, Heart, 
-  Phone, MessageCircle, IndianRupee, Calendar, Clock, CheckCircle, 
-  XCircle, Youtube,  ChevronLeft, ChevronRight, GraduationCap,
-  Building2, Bed, Navigation,ArrowLeft, User2, Camera, Sparkles, Info
+import {
+  MapPin,
+  Star,
+  Wifi,
+  Coffee,
+  Car,
+  Shield,
+  Home,
+  Share2,
+  Heart,
+  Phone,
+  MessageCircle,
+  IndianRupee,
+  Calendar,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Youtube,
+  ChevronLeft,
+  ChevronRight,
+  Bed,
+  Navigation,
+  ArrowLeft,
+  Camera,
+  Sparkles,
+  Info,
 } from 'lucide-react';
 import type { PG } from '../../types';
 import { getAllImageUrls, handleImageError } from '../../utils/imageUtils';
 import { getApiUrl } from '../../config/api';
 import BackButton from '../common/BackButton';
 
-
-
-
-const amenityIcons: Record<string, React.ReactNode> = {
+const amenityIcons: Record<string, ReactNode> = {
   wifi: <Wifi className="w-5 h-5" />,
   food: <Coffee className="w-5 h-5" />,
   parking: <Car className="w-5 h-5" />,
@@ -29,556 +48,686 @@ const amenityIcons: Record<string, React.ReactNode> = {
   fridge: <div className="w-5 h-5">🧊</div>,
 };
 
-export default function PGCardDetails() {
-  const { id } = useParams();
-  const [activeImage, setActiveImage] = useState(0);
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const [pg, setPg] = useState<PG | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-useEffect(() => {
-  const fetchPG = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await fetch(getApiUrl(`/pgs/${id}`), {
-        headers: { 'Accept': 'application/json' },
-      });
-      if (!response.ok) throw new Error(`Failed to fetch PG details`);
-      const data = await response.json();
-      
-      // Console log the complete response
-      console.log('=== PG API Response ===');
-      console.log('Complete Response:', data);
-      console.log('Success:', data.success);
-      
-      // Console log specific fields from the nested data
-      if (data && data.data) {
-        const pgData = data.data;
-        console.log('=== PG Details ===');
-        console.log('PG Name:', pgData.name || pgData.pg_name);
-        console.log('PG Address:', pgData.address);
-        console.log('PG City:', pgData.city);
-        console.log('PG Area:', pgData.area);
-        console.log('PG ID:', pgData.id);
-        console.log('Phone Number:', pgData.phone_number);
-        console.log('WhatsApp Number:', pgData.whatsapp_number);
-        console.log('Category:', pgData.category);
-        console.log('Preferred For:', pgData.preferred_for);
-        console.log('Amenities:', pgData.amenities);
-        console.log('Nearby Places:', pgData.nearby_places);
-        console.log('Price:', pgData.price);
-        console.log('Security Deposit:', pgData.security_deposit);
-        console.log('Notice Period:', pgData.notice_period);
-        console.log('Refundable on Exit:', pgData.refundable_on_exit);
-        console.log('YouTube Link:', pgData.youtube_link);
-        console.log('Images:', pgData.images);
-        console.log('Created At:', pgData.created_at);
-        console.log('Updated At:', pgData.updated_at);
-        console.log('=== All PG Data ===');
-        console.log(pgData);
-        
-        // Set the nested data
-        setPg(pgData as PG);
-      } else if (data) {
-        // Fallback if data is not nested
-        console.log('=== PG Details (Direct) ===');
-        console.log('PG Name:', data.name || data.pg_name);
-        console.log('PG Address:', data.address);
-        console.log('=== All Data ===');
-        console.log(data);
-        setPg(data as PG);
-      }
-    } catch (error) {
-      console.error('Error fetching PG details:', error);
-      setError('Failed to load PG details');
-    } finally {
-      setLoading(false);
-    }
-  };
-  if (id) fetchPG();
-  else {
-    setError('No PG ID provided');
-    setLoading(false);
-  }
-}, [id]);
-
-const handleShare = () => {
-  const shareData = {
-    title: pg?.name || 'PG Details',
-    text: `Check out ${pg?.name || 'this PG'} on PG Hunt`,
-    url: window.location.href
-  };
-  if (navigator.share) {
-    navigator.share(shareData).catch(() => {
-      navigator.clipboard.writeText(window.location.href);
-    });
-  } else {
-    navigator.clipboard.writeText(window.location.href);
-  }
+type SharingValue = {
+  enabled?: boolean;
+  rent?: number | null;
 };
 
-if (loading) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-      <div className="text-center bg-white rounded-2xl shadow-lg p-8 sm:p-12 max-w-md mx-4">
-        <div className="w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-        <h2 className="text-xl font-semibold text-gray-800 mb-2">Loading PG Details</h2>
-        <p className="text-gray-600">Please wait while we fetch the information...</p>
-      </div>
-    </div>
-  );
-}
+type EnabledSharingType = {
+  type: string;
+  rent: number;
+};
 
-if (error || !pg) {
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-      <div className="text-center max-w-md mx-4 bg-white rounded-2xl shadow-lg p-8 sm:p-12">
-        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
-          <XCircle className="w-10 h-10 text-red-600" />
+export default function PGCardDetails() {
+  const { id } = useParams<{ id: string }>();
+
+  const [activeImage, setActiveImage] = useState<number>(0);
+  const [isWishlisted, setIsWishlisted] = useState<boolean>(false);
+  const [pg, setPg] = useState<PG | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPG = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const response = await fetch(getApiUrl(`/pgs/${id}`), {
+          headers: { Accept: 'application/json' },
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch PG details');
+
+        const data = await response.json();
+
+        if (data && data.data) {
+          const pgData = data.data;
+          setPg(pgData as PG);
+        } else if (data) {
+          setPg(data as PG);
+        }
+      } catch (err) {
+        console.error('Error fetching PG details:', err);
+        setError('Failed to load PG details');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      void fetchPG();
+    } else {
+      setError('No PG ID provided');
+      setLoading(false);
+    }
+  }, [id]);
+
+  const handleShare = () => {
+    if (!pg) return;
+
+    const shareData = {
+      title: pg.name || pg.pg_name || 'PG Details',
+      text: `Check out ${pg.name || pg.pg_name || 'this PG'} on PG Hunt`,
+      url: window.location.href,
+    };
+
+    const nav = navigator as Navigator & {
+      share?: (data: typeof shareData) => Promise<void>;
+      clipboard?: {
+        writeText?: (text: string) => Promise<void>;
+      };
+    };
+
+    if (nav.share) {
+      nav
+        .share(shareData)
+        .catch(() => nav.clipboard?.writeText?.(window.location.href));
+    } else {
+      nav.clipboard?.writeText?.(window.location.href);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FB] flex items-center justify-center">
+        <div className="text-center bg-white rounded-2xl shadow-lg p-8 sm:p-12 max-w-md mx-4">
+          <div className="w-16 h-16 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+          <h2 className="text-xl font-semibold text-slate-900 mb-2">
+            Loading PG details
+          </h2>
+          <p className="text-slate-500">
+            Please wait while we fetch the information...
+          </p>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
-          {error || 'PG not found'}
-        </h2>
-        <p className="text-gray-600 mb-8 leading-relaxed">
-          The PG you're looking for might have been removed or doesn't exist. Please try searching for other properties.
-        </p>
-        <Link 
-          to="/search" 
-          className="inline-flex items-center px-6 py-3 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-all duration-200 font-medium hover:shadow-lg transform hover:-translate-y-1"
-        >
-          <ChevronLeft className="w-5 h-5 mr-2" />
-          Back to Search
-        </Link>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-  const images = getAllImageUrls(pg.images);
+  if (error || !pg) {
+    return (
+      <div className="min-h-screen bg-[#F5F7FB] flex items-center justify-center">
+        <div className="text-center max-w-md mx-4 bg-white rounded-2xl shadow-lg p-8 sm:p-12">
+          <div className="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <XCircle className="w-10 h-10 text-red-500" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-4">
+            {error || 'PG not found'}
+          </h2>
+          <p className="text-slate-500 mb-8 leading-relaxed">
+            The PG you're looking for might have been removed or doesn't exist.
+            Please try searching for other properties.
+          </p>
+          <Link
+            to="/search"
+            className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all duration-200 font-medium hover:shadow-md"
+          >
+            <ChevronLeft className="w-5 h-5 mr-2" />
+            Back to search
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Safe helpers based on PG ----
+
+  const images = (getAllImageUrls((pg as any).images) || []) as string[];
+  const hasImages = images.length > 0;
+  const safeActiveIndex =
+    images.length === 0 ? 0 : Math.min(activeImage, images.length - 1);
+  const activeImageUrl = hasImages ? images[safeActiveIndex] : '';
+
   const pgName = pg.pg_name || pg.name || 'PG Details';
 
-  // Helper function to get enabled sharing types with prices
-  const getEnabledSharingTypes = () => {
-    if (!pg.sharing_types) return [];
-    return Object.entries(pg.sharing_types)
-      .filter(([, value]) => value.enabled)
+  const getEnabledSharingTypes = (): EnabledSharingType[] => {
+    const raw = (pg as any).sharing_types as
+      | Record<string, SharingValue>
+      | undefined;
+
+    if (!raw) return [];
+
+    return Object.entries(raw)
+      .filter(([, value]) => Boolean(value?.enabled))
       .map(([key, value]) => ({
         type: key,
-        rent: value.rent
+        rent: Number(value?.rent ?? 0),
       }));
   };
 
+  const sharingTypes = getEnabledSharingTypes();
+
+  const bestPrice =
+    sharingTypes.length > 0
+      ? Math.min(...sharingTypes.map((s) => s.rent))
+      : Number((pg as any).price ?? 0);
+
+  const securityDeposit =
+    (pg as any).security_deposit != null
+      ? Number((pg as any).security_deposit)
+      : undefined;
+
+  const amenities = ((pg as any).amenities ?? []) as string[];
+  const nearbyPlaces = ((pg as any).nearby_places ?? []) as string[];
+
+  const hasPricingSection =
+    sharingTypes.length > 0 || (pg as any).price != null;
+  const hasAmenitiesSection = amenities.length > 0;
+  const hasPoliciesSection =
+    securityDeposit !== undefined ||
+    (pg as any).notice_period !== undefined ||
+    (pg as any).refundable_on_exit !== undefined;
+  const hasAdditionalInfoSection =
+    (pg as any).created_at || (pg as any).updated_at;
+
+  const showDetailSections =
+    hasPricingSection ||
+    hasAmenitiesSection ||
+    hasPoliciesSection ||
+    hasAdditionalInfoSection;
+
   const nextImage = () => {
+    if (!images.length) return;
     setActiveImage((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
+    if (!images.length) return;
     setActiveImage((prev) => (prev - 1 + images.length) % images.length);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        
-        {/* Back Button */}
-        <div className="mb-6">
-          <BackButton text="Back" variant="outlined" />
-        </div>
-        
-        <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/30 overflow-hidden">
-          {/* Image Gallery */}
-            <div className="relative h-60 sm:h-[400px] overflow-hidden  shadow-lg">
-              {/* Image */}
-              <img
-                src={images[activeImage]}
-                alt={pgName}
-                className="w-full h-full object-cover"
-                onError={handleImageError}
-                loading="lazy"
-              />
-              {/* Top Action Bar */}
-              <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-10">
-                <Link
-                  to="/search"
-                  className="bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all">
-                  <ArrowLeft size={20} className="text-gray-700" />
-                </Link>
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleShare}
-                    className="bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
-                    title="Share this PG"
-                  >
-                    <Share2 size={20} className="text-gray-700" />
-                  </button>
-                  <button
-                    onClick={() => setIsWishlisted(!isWishlisted)}
-                    className="bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
-                    title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                  >
-                    <Heart
-                      size={20}
-                      className={isWishlisted ? "text-red-500 fill-red-500" : "text-gray-700"}
-                    />
-                  </button>
-                </div>
-              </div>
+    <div className="min-h-screen bg-[#F5F7FB]">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-5 sm:py-7 lg:py-8">
+       
 
-              {/* Left/Right Arrows */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
-                  >
-                    <ChevronLeft size={20} className="text-gray-700" />
-                  </button>
-                  <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow-md transition-all"
-                  >
-                    <ChevronRight size={20} className="text-gray-700" />
-                  </button>
-                </>
-              )}
-
-              {/* Image Indicators */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-                {images.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setActiveImage(index)}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === activeImage
-                        ? "bg-white scale-125 shadow-md"
-                        : "bg-white/60 hover:bg-white/90"
-                    }`}
+        {/* Main layout */}
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
+          {/* LEFT COLUMN */}
+          <div className="lg:col-span-2 space-y-6 lg:space-y-7">
+            {/* Hero + Basic details + 4 sections in same card */}
+            <div className="bg-white rounded-xl shadow-[0_18px_45px_rgba(15,23,42,0.08)] border border-slate-100 overflow-hidden">
+              {/* Image gallery */}
+              <div className="relative">
+                <div className="h-60 sm:h-72 md:h-80 lg:h-80">
+                  <img
+                    src={activeImageUrl}
+                    alt={pgName}
+                    className="w-full h-full object-cover"
+                    onError={handleImageError}
+                    loading="lazy"
                   />
-                ))}
-              </div>
-            </div>
-          {/* Content Sections */}
-          <div className="p-6 sm:p-8 lg:p-12 space-y-8 sm:space-y-12">
-              {/* Title & Rating Section */}
-              <div className="mb-6">
-                <div className="flex items-start justify-between mb-2">
-                  <h1 className="text-2xl font-bold text-gray-900">{pg.name}</h1>
-                  <div className="flex items-center gap-1 bg-green-50 px-2 py-1 rounded-lg">
-                    <Star size={16} className="text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-semibold text-gray-700">{pg.rating}</span>
-                  </div>
                 </div>
-                <div className="flex items-center text-gray-600 mb-4">
-                  <MapPin size={16} className="mr-1" />
-                  <span className="text-sm">{pg.address}</span>
-                </div>
-              </div>
-              <div className="grid md:grid-cols-2 gap-6 mb-6">
-                {/* Location Details Card */}
-                <div className="bg-blue-50 p-5 rounded-xl border border-blue-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="bg-blue-100 p-2 rounded-lg">
-                      <MapPin size={20} className="text-blue-600" />
-                    </div>
-                    <h2 className="text-lg font-semibold text-gray-800">Location Details</h2>
-                  </div>
-                  <div className="space-y-3">
-                    {pg.area && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                        <span className="text-sm text-gray-600">Area: <span className="ml-1 font-medium text-gray-900">{pg.area}</span></span>
-                      </div>
-                    )}
-                    {pg.city && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                        <span className="text-sm text-gray-600">City: <span className="ml-1 font-medium text-gray-900">{pg.city}</span></span>
-                      </div>
-                    )}
-                    {pg.address && (
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                        <span className="text-sm text-gray-600">Address: <span className="ml-1 font-medium text-gray-900">{pg.address}</span></span>
-                      </div>
-                    )}
+
+                {/* Top action bar */}
+                <div className="absolute inset-x-3 top-3 flex items-center justify-between">
+                  <Link
+                    to="/search"
+                    className="flex items-center justify-center rounded-full bg-white/90 backdrop-blur px-2 py-1 shadow-sm hover:bg-white"
+                  >
+                    <ArrowLeft size={18} className="text-slate-700" />
+                  </Link>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleShare}
+                      className="flex items-center justify-center rounded-full bg-white/90 backdrop-blur p-2 shadow-sm hover:bg-white"
+                      title="Share this PG"
+                      type="button"
+                    >
+                      <Share2 size={18} className="text-slate-700" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsWishlisted((prev) => !prev)}
+                      className="flex items-center justify-center rounded-full bg-white/90 backdrop-blur p-2 shadow-sm hover:bg-white"
+                      title={
+                        isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'
+                      }
+                    >
+                      <Heart
+                        size={18}
+                        className={
+                          isWishlisted
+                            ? 'text-rose-500 fill-rose-500'
+                            : 'text-slate-700'
+                        }
+                      />
+                    </button>
                   </div>
                 </div>
 
-                {/* PG Information Card */}
-                <div className="bg-green-50 p-5 rounded-xl border border-green-100">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="bg-green-100 p-2 rounded-lg">
-                      <Building2 size={20} className="text-green-600" />
+                {/* Image navigation */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={prevImage}
+                      className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur p-2 shadow-sm hover:bg-white"
+                    >
+                      <ChevronLeft size={18} className="text-slate-700" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={nextImage}
+                      className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/90 backdrop-blur p-2 shadow-sm hover:bg-white"
+                    >
+                      <ChevronRight size={18} className="text-slate-700" />
+                    </button>
+                  </>
+                )}
+
+                {/* Dots */}
+                {images.length > 1 && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    {images.map((_, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setActiveImage(index)}
+                        className={`h-1.5 rounded-full transition-all ${
+                          index === safeActiveIndex
+                            ? 'w-4 bg-white'
+                            : 'w-2 bg-white/70'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Basic details */}
+              <div className="px-5 sm:px-6 py-4 sm:py-5 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                      {(pg as any).category && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-medium text-emerald-700">
+                          {(pg as any).category}
+                        </span>
+                      )}
+                      {(pg as any).preferred_for && (
+                        <span className="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-0.5 text-[11px] font-medium text-sky-700">
+                          {(pg as any).preferred_for}
+                        </span>
+                      )}
+                      <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+                        <Shield className="w-3 h-3 mr-1" />
+                        Verified
+                      </span>
                     </div>
-                    <h2 className="text-lg font-semibold text-gray-800">PG Information</h2>
+                    <h1 className="text-xl sm:text-2xl font-semibold text-slate-900">
+                      {pg.name || pg.pg_name}
+                    </h1>
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-500">
+                      <span className="inline-flex items-center">
+                        <MapPin size={14} className="mr-1" />
+                        {(pg as any).area && (
+                          <span>{(pg as any).area}, </span>
+                        )}
+                        <span>{(pg as any).city}</span>
+                      </span>
+                      {(pg as any).address && (
+                        <span className="hidden sm:inline-block">
+                          • {(pg as any).address}
+                        </span>
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-3">
-                    {pg.category && (
-                      <div className="flex items-center gap-2">
-                        <User2 size={16} className="text-green-500" />
-                        <span className="text-sm text-gray-600">Category: <span className="ml-1 font-medium text-gray-900">{pg.category}</span></span>
-                      </div>
-                    )}
-                    {pg.preferred_for && (
-                      <div className="flex items-center gap-2">
-                        <GraduationCap size={16} className="text-green-500" />
-                        <span className="text-sm text-gray-600">Preferred for: <span className="ml-1 font-medium text-gray-900">{pg.preferred_for}</span></span>
-                      </div>
-                    )}
-                    {pg.rating && (
-                      <div className="flex items-center gap-2">
-                        <Star size={16} className="text-yellow-500" />
-                        <span className="text-sm text-gray-600">Rating: <span className="ml-1 font-medium text-gray-900">{pg.rating}/5</span></span>
-                      </div>
-                    )}
-                  </div>
+                  {(pg as any).rating && (
+                    <div className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 self-start">
+                      <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                      <span className="text-sm font-semibold text-slate-800">
+                        {(pg as any).rating}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
-            {/* Pricing & Room Types */}
-              {(getEnabledSharingTypes().length > 0 || pg.price) && (
-                <div className="border-b border-gray-200 pb-8 sm:pb-12">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg mr-3 shadow">
-                  <Bed className="w-5 h-5 text-white" />
-                </div>
-                Type of Sharing & Rent
-              </h3>
 
-                  {getEnabledSharingTypes().length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                      {getEnabledSharingTypes().map(({ type, rent }) => (
-                        <div
-                          key={type}
-                          className="flex flex-col items-center justify-center text-center bg-gray-50 rounded-xl p-4 shadow-sm hover:bg-gray-100 transition-all"
-                        >
-                          <Bed className="w-6 h-6 text-gray-600 mb-2" />
-                          <div className="text-sm font-medium text-gray-800 capitalize">{type}</div>
-                          <div className="text-lg font-bold text-gray-900 mt-1">₹{rent?.toLocaleString()}</div>
-                          <div className="text-xs text-gray-500">per month</div>
+              {/* Basic details – sub sections (4 sections here) */}
+              {showDetailSections && (
+                <div className="px-5 sm:px-6 pb-5 sm:pb-6 space-y-6 border-t border-slate-100">
+                  {/* Pricing & Availability */}
+                  {hasPricingSection && (
+                    <section className="pt-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="flex items-center text-base sm:text-lg font-semibold text-slate-900">
+                          <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50">
+                            <Bed className="w-4 h-4 text-emerald-600" />
+                          </span>
+                          Pricing &amp; Availability
+                        </h3>
+                      </div>
+
+                      {sharingTypes.length > 0 ? (
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                          {sharingTypes.map(({ type, rent }) => (
+                            <div
+                              key={type}
+                              className="rounded-2xl border border-slate-100 bg-slate-50/60 px-3 py-3 sm:px-4 sm:py-4 text-center hover:border-emerald-200 hover:bg-emerald-50/70 transition-colors"
+                            >
+                              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
+                                {type}
+                              </p>
+                              <p className="text-sm sm:text-base font-semibold text-slate-900">
+                                ₹{rent.toLocaleString()}
+                              </p>
+                              <p className="text-[11px] text-slate-500 mt-1">
+                                per month
+                              </p>
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
-                  ) : pg.price && (
-                    <div className="max-w-md mx-auto">
-                      <div className="flex flex-col items-center justify-center text-center bg-gray-50 rounded-xl p-6 shadow-sm hover:bg-gray-100 transition-all">
-                        <Bed className="w-8 h-8 text-gray-600 mb-3" />
-                        <div className="text-base font-medium text-gray-800 mb-1">Monthly Rent</div>
-                        <div className="text-2xl font-bold text-gray-900 mb-1">₹{pg.price?.toLocaleString()}</div>
-                        <div className="text-sm text-gray-500">per month</div>
+                      ) : (pg as any).price ? (
+                        <div className="max-w-sm">
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/60 px-5 py-4 sm:px-6 sm:py-5">
+                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1.5">
+                              Monthly rent
+                            </p>
+                            <p className="text-xl sm:text-2xl font-semibold text-slate-900">
+                              ₹{Number((pg as any).price).toLocaleString()}
+                              <span className="ml-1 text-xs font-normal text-slate-500">
+                                /month
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+                    </section>
+                  )}
+
+                  {/* Divider */}
+                  {hasPricingSection &&
+                    (hasAmenitiesSection ||
+                      hasPoliciesSection ||
+                      hasAdditionalInfoSection) && (
+                      <div className="border-t border-slate-200" />
+                    )}
+
+                  {/* Amenities */}
+                  {hasAmenitiesSection && (
+                    <section>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="flex items-center text-base sm:text-lg font-semibold text-slate-900">
+                          <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50">
+                            <Sparkles className="w-4 h-4 text-emerald-600" />
+                          </span>
+                          Amenities
+                        </h3>
                       </div>
-                    </div>
+                      <div className="flex flex-wrap gap-2.5">
+                        {amenities.map((amenity, index) => {
+                          const key = amenity.toLowerCase();
+                          const name = amenity.replace('_', ' ');
+                          const icon = amenityIcons[key] ?? (
+                            <Home className="w-4 h-4" />
+                          );
+                          return (
+                            <div
+                              key={index}
+                              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs sm:text-sm text-slate-700"
+                            >
+                              {icon}
+                              <span className="capitalize">{name}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* Divider */}
+                  {hasAmenitiesSection &&
+                    (hasPoliciesSection || hasAdditionalInfoSection) && (
+                      <div className="border-t border-slate-200" />
+                    )}
+
+                  {/* Policies & Terms */}
+                  {hasPoliciesSection && (
+                    <section>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="flex items-center text-base sm:text-lg font-semibold text-slate-900">
+                          <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50">
+                            <Shield className="w-4 h-4 text-slate-700" />
+                          </span>
+                          Policies &amp; Terms
+                        </h3>
+                      </div>
+                      <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
+                        {securityDeposit !== undefined && (
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-center">
+                            <IndianRupee className="w-5 h-5 text-emerald-600 mx-auto mb-1.5" />
+                            <p className="text-xs font-medium text-slate-500 mb-0.5">
+                              Security deposit
+                            </p>
+                            <p className="text-sm sm:text-base font-semibold text-slate-900">
+                              ₹{securityDeposit.toLocaleString()}
+                            </p>
+                          </div>
+                        )}
+                        {(pg as any).notice_period !== undefined && (
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-center">
+                            <Calendar className="w-5 h-5 text-sky-600 mx-auto mb-1.5" />
+                            <p className="text-xs font-medium text-slate-500 mb-0.5">
+                              Notice period
+                            </p>
+                            <p className="text-sm sm:text-base font-semibold text-slate-900">
+                              {(pg as any).notice_period} days
+                            </p>
+                          </div>
+                        )}
+                        {(pg as any).refundable_on_exit !== undefined && (
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-center">
+                            {(pg as any).refundable_on_exit ? (
+                              <CheckCircle className="w-5 h-5 text-emerald-600 mx-auto mb-1.5" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-rose-500 mx-auto mb-1.5" />
+                            )}
+                            <p className="text-xs font-medium text-slate-500 mb-0.5">
+                              Refundable
+                            </p>
+                            <p
+                              className={`text-sm sm:text-base font-semibold ${
+                                (pg as any).refundable_on_exit
+                                  ? 'text-emerald-600'
+                                  : 'text-rose-500'
+                              }`}
+                            >
+                              {(pg as any).refundable_on_exit ? 'Yes' : 'No'}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </section>
+                  )}
+
+                  {/* Divider */}
+                  {hasPoliciesSection && hasAdditionalInfoSection && (
+                    <div className="border-t border-slate-200" />
+                  )}
+
+                  {/* Additional Information */}
+                  {hasAdditionalInfoSection && (
+                    <section>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="flex items-center text-base sm:text-lg font-semibold text-slate-900">
+                          <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-xl bg-slate-50">
+                            <Info className="w-4 h-4 text-slate-700" />
+                          </span>
+                          Additional Information
+                        </h3>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                        {(pg as any).created_at && (
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-center">
+                            <Clock className="w-4 h-4 text-slate-700 mx-auto mb-1.5" />
+                            <p className="text-xs font-medium text-slate-500 mb-0.5">
+                              Listed on
+                            </p>
+                            <p className="text-xs sm:text-sm font-semibold text-slate-800">
+                              {new Date(
+                                (pg as any).created_at as string,
+                              ).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                        )}
+                        {(pg as any).updated_at && (
+                          <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-center">
+                            <Clock className="w-4 h-4 text-slate-700 mx-auto mb-1.5" />
+                            <p className="text-xs font-medium text-slate-500 mb-0.5">
+                              Updated on
+                            </p>
+                            <p className="text-xs sm:text-sm font-semibold text-slate-800">
+                              {new Date(
+                                (pg as any).updated_at as string,
+                              ).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </section>
                   )}
                 </div>
               )}
-            {/* Amenities */}
-            {pg.amenities && pg.amenities.length > 0 && (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                  <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg mr-3 shadow">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
-                  Amiities
-                </h3>
-                <div className="flex flex-wrap gap-3">
-                  {pg.amenities.map((amenity, index) => {
-                    const name = amenity.replace('_', ' ');
-                    const icon = amenityIcons[amenity.toLowerCase()] || <Home className="w-4 h-4" />;
-                    
-                    return (
-                      <div
-                        key={index}
-                        className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-green-200 bg-green-50 text-green-700"
-                      >
-                        <div className="flex-shrink-0">
-                          {icon}
-                        </div>
-                        <span className="text-sm font-medium whitespace-nowrap capitalize">
-                          {name}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-            {/* Nearby Places */}
-           {pg.nearby_places && pg.nearby_places.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg mr-3 shadow">
-                  <MapPin className="w-5 h-5 text-white" />
-                </div>
-                Nearby Places
-              </h3>
-              <div className="flex flex-wrap gap-3">
-                {pg.nearby_places.map((place, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2 bg-teal-50 text-teal-700 px-3 py-2 rounded-lg border border-teal-200"
-                  >
-                    <Navigation className="w-4 h-4" />
-                    <span className="text-sm font-medium capitalize">{place}</span>
-                  </div>
-                ))}
-              </div>
             </div>
-            )}
-            {/* Policies & Terms */}
-            {(pg.security_deposit !== undefined || pg.notice_period !== undefined || pg.refundable_on_exit !== undefined) && (
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg mr-3 shadow">
-                  <Shield className="w-5 h-5 text-white" />
+
+            {/* Nearby places - separate card */}
+            {nearbyPlaces.length > 0 && (
+              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-5 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="flex items-center text-base sm:text-lg font-semibold text-slate-900">
+                    <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-xl bg-sky-50">
+                      <MapPin className="w-4 h-4 text-sky-600" />
+                    </span>
+                    Nearby Places
+                  </h3>
                 </div>
-                Policies & Terms
-              </h3>
-                <div className="grid sm:grid-cols-3 gap-4">
-                  {pg.security_deposit !== undefined && (
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      <IndianRupee size={24} className="text-blue-600 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-gray-900 mb-1">Security Deposit</p>
-                      <p className="text-lg font-bold text-gray-900">₹{pg.security_deposit.toLocaleString()}</p>
+                <div className="flex flex-wrap gap-2.5">
+                  {nearbyPlaces.map((place, index) => (
+                    <div
+                      key={index}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-sky-100 bg-sky-50 px-3 py-1.5 text-xs sm:text-sm text-sky-800"
+                    >
+                      <Navigation className="w-4 h-4" />
+                      <span className="capitalize">{place}</span>
                     </div>
-                  )}
-                  {pg.notice_period !== undefined && (
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      <Calendar size={24} className="text-blue-600 mx-auto mb-2" />
-                      <p className="text-sm font-medium text-gray-900 mb-1">Notice Period</p>
-                      <p className="text-lg font-bold text-gray-900">{pg.notice_period} days</p>
-                    </div>
-                  )}
-                  {pg.refundable_on_exit !== undefined && (
-                    <div className="text-center p-4 bg-gray-50 rounded-xl">
-                      {pg.refundable_on_exit ? (
-                        <CheckCircle size={24} className="text-green-600 mx-auto mb-2" />
-                      ) : (
-                        <XCircle size={24} className="text-red-600 mx-auto mb-2" />
-                      )}
-                      <p className="text-sm font-medium text-gray-900 mb-1">Refundable</p>
-                      <p className={`text-lg font-bold ${pg.refundable_on_exit ? 'text-green-600' : 'text-red-600'}`}>
-                        {pg.refundable_on_exit ? 'Yes' : 'No'}
-                      </p>
-                    </div>
-                  )}
+                  ))}
                 </div>
               </div>
             )}
 
-                      {/* YouTube Video */}
-            {pg.youtube_link && (
-              <div className="border-b border-gray-200 pb-8 sm:pb-12">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                  <div className="bg-gradient-to-r from-red-500 to-pink-600 p-3 rounded-xl mr-4 shadow-lg">
-                    <Youtube className="w-6 h-6 text-white" />
-                  </div>
-                  Video Tour
-                </h2>
-                <div className="relative group">
-                  <div className="aspect-video bg-gradient-to-br from-gray-900 to-black rounded-2xl overflow-hidden shadow-2xl border-4 border-gray-200 group-hover:border-red-300 transition-all duration-500">
+            {/* Video tour - separate card */}
+            {(pg as any).youtube_link && (
+              <div className="bg-white rounded-3xl shadow-sm border border-slate-100 p-5 sm:p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="flex items-center text-base sm:text-lg font-semibold text-slate-900">
+                    <span className="mr-2 flex h-8 w-8 items-center justify-center rounded-xl bg-rose-50">
+                      <Youtube className="w-4 h-4 text-rose-600" />
+                    </span>
+                    Video Tour
+                  </h3>
+                </div>
+                <div className="overflow-hidden rounded-2xl border border-slate-100 bg-black/90">
+                  <div className="aspect-video">
                     <iframe
-                      src={pg.youtube_link.replace('watch?v=', 'embed/')}
+                      src={(pg as any).youtube_link.replace(
+                        'watch?v=',
+                        'embed/',
+                      )}
                       className="w-full h-full"
                       allowFullScreen
                       title="PG Video Tour"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     />
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
                 </div>
               </div>
             )}
-            {/* Contact Information */}
-             <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg mr-3 shadow">
-                  <Phone className="w-5 h-5 text-white" />
+          </div>
+
+          {/* RIGHT COLUMN */}
+          <aside className="lg:col-span-1">
+            <div className="lg:sticky lg:top-24 space-y-4">
+              <div className="bg-white rounded-3xl shadow-[0_18px_45px_rgba(15,23,42,0.12)] border border-emerald-50 p-5 sm:p-6">
+                <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500 mb-1">
+                  Starting from
+                </p>
+                <div className="flex items-baseline gap-1 mb-1">
+                  <p className="text-2xl sm:text-3xl font-semibold text-slate-900">
+                    ₹{bestPrice.toLocaleString()}
+                  </p>
+                  <span className="text-xs text-slate-500">per month</span>
                 </div>
-                Contact 
-              </h3>
-                {(pg.phone_number || pg.whatsapp_number) && (
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
-                    {/* Call Button */}
-                    {pg.phone_number && (
-                      <a
-                        href={`tel:${pg.phone_number}`}
-                        className="bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-md"
-                      >
-                        <Phone size={18} />
-                        <span>Call Now</span>
-                      </a>
-                    )}
 
-                    {/* WhatsApp Button */}
-                    {pg.whatsapp_number && (
-                      <a
-                        href={`https://wa.me/${pg.whatsapp_number.replace(/[^0-9]/g, '')}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-md"
-                      >
-                        <MessageCircle size={18} />
-                        <span>WhatsApp</span>
-                      </a>
-                    )}
+                {securityDeposit !== undefined && (
+                  <p className="text-[11px] text-slate-500 mb-4">
+                    Security deposit:{' '}
+                    <span className="font-medium text-slate-800">
+                      ₹{securityDeposit.toLocaleString()}
+                    </span>
+                  </p>
+                )}
 
-                    {/* Directions Button */}
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-md">
-                      <Navigation size={18} />
+                <div className="space-y-2 mt-4">
+                  {(pg as any).phone_number && (
+                    <a
+                      href={`tel:${String((pg as any).phone_number)}`}
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white hover:bg-emerald-700 transition-colors"
+                    >
+                      <Phone size={16} />
+                      Call owner
+                    </a>
+                  )}
+                  {(pg as any).whatsapp_number && (
+                    <a
+                      href={`https://wa.me/${String(
+                        (pg as any).whatsapp_number,
+                      ).replace(/[^0-9]/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700 hover:bg-emerald-100 transition-colors"
+                    >
+                      <MessageCircle size={16} />
+                      WhatsApp
+                    </a>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <button
+                      type="button"
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+                    >
+                      <Navigation size={15} />
                       <span>Directions</span>
                     </button>
-
-                    {/* 360° View Button */}
-                    <button className="bg-orange-600 hover:bg-orange-700 text-white py-3 px-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-md">
-                      <Camera size={18} />
+                    <button
+                      type="button"
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[13px] font-medium text-slate-700 hover:bg-slate-100 transition-colors"
+                    >
+                      <Camera size={15} />
                       <span>360° View</span>
                     </button>
                   </div>
-                )}
-              {/* Additional Information */}
-              {(pg.created_at || pg.updated_at) && (
-                <div className="mb-8">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-                <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-2 rounded-lg mr-3 shadow">
-                  <Info className="w-5 h-5 text-white" />
                 </div>
-                Additional Information
-              </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    {pg.created_at && (
-                      <div className="text-center p-4 bg-gray-50 rounded-xl">
-                        <Clock size={20} className="text-gray-600 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-gray-900 mb-1">Listed On</p>
-                        <p className="text-sm font-semibold text-gray-700">
-                          {new Date(pg.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                    )}
-                    {pg.updated_at && (
-                      <div className="text-center p-4 bg-gray-50 rounded-xl">
-                        <Clock size={20} className="text-gray-600 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-gray-900 mb-1">Updated On</p>
-                        <p className="text-sm font-semibold text-gray-700">
-                          {new Date(pg.updated_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+
+                <div className="mt-4 border-t border-slate-100 pt-3">
+                  <p className="text-[11px] text-slate-500">
+                    No brokerage · Direct owner / property contact
+                  </p>
                 </div>
-              )}
-          </div>
+              </div>
+            </div>
+          </aside>
         </div>
       </div>
     </div>
   );
 }
-
-
