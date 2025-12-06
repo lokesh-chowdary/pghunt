@@ -1,7 +1,34 @@
 import { MapPin, Mail, Phone, Youtube } from "lucide-react";
 import { FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Footer = () => {
+
+
+const navigate = useNavigate();
+
+const handleAboutClick = () => {
+    navigate('/about');
+  };
+
+const handleContactClick = () => {
+    navigate('/contact');
+  };
+
+const handlePrivacy_PolicyClick = () => {
+    navigate('/privacy_policy');
+  };
+
+const handleCookie_PolicyClick = () => {
+    navigate('/cookie_policy');
+  };
+
+const handleTerms_of_serviceClick = () => {
+    navigate('/terms_of_service');
+  };
+
   return (
     <footer className="bg-[#1A1F2C] text-white py-12 px-6 lg:px-12">
       <div className="container mx-auto max-w-6xl">
@@ -26,15 +53,13 @@ const Footer = () => {
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-semibold mb-4 text-center">Quick Links</h3>
-            <ul className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm md:text-base">
-              {["About Us", "How It Works", "Our Services", "List Your Property", "Blog & Resources"].map(link => (
-                <li key={link}>
-                  <a href="#" className="text-[#C8C8C9] hover:text-white transition-colors">
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm md:text-base">
+              <button onClick={handleAboutClick}>About us</button>
+               <button onClick={handleContactClick}>Contact</button>
+                <button onClick={handlePrivacy_PolicyClick}>Privacy Policy</button>
+                 <button onClick={handleCookie_PolicyClick}>Cookie Policy</button>
+                  <button onClick={handleTerms_of_serviceClick}>Terms of Service</button>
+            </div>
           </div>
 
           {/* Popular Cities */}
@@ -80,11 +105,6 @@ const Footer = () => {
           <p className="text-[#C8C8C9] mb-4 md:mb-0">
             © {new Date().getFullYear()} PG Finder. All rights reserved.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <a href="#" className="text-[#C8C8C9] hover:text-white">Privacy Policy</a>
-            <a href="#" className="text-[#C8C8C9] hover:text-white">Terms of Service</a>
-            <a href="#" className="text-[#C8C8C9] hover:text-white">Cookie Policy</a>
-          </div>
         </div>
       </div>
     </footer>

@@ -131,7 +131,7 @@ const AddPGForm = () => {
       // Try fetching single listing
       try {
         const response = await apiService.get<{ success: boolean; data: any }>(
-          `/listing/${editId}?user_id=${userId}`
+          `/listings/${editId}?user_id=${userId}`
         );
         console.log('Single Listing Response:', response.data); // Debug API response
         if (response.success && response.data) {
@@ -266,10 +266,10 @@ const AddPGForm = () => {
       });
 
       if (isEditMode && editId && userId) {
-        await apiService.put(`/listing/${editId}?user_id=${userId}`, formDataToSend);
+        await apiService.put(`/listings/${editId}?user_id=${userId}`, formDataToSend);
         toast.success('Listing updated successfully');
       } else {
-        await apiService.post(`/listing?user_id=${userId}`, formDataToSend);
+        await apiService.post(`/listings?user_id=${userId}`, formDataToSend);
         toast.success('Listing created successfully');
       }
       setIsSubmitted(true);

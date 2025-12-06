@@ -13,6 +13,12 @@ import HomePage from './components/HomePage';
 import AddPgForm from './components/listpgdetails/AddPgForm';
 import ErrorBoundary from './components/ErrorBoundary';
 import ProtectedRoute from './components/store/ProtectedRoute';
+import About from "./components/About";
+import Contact from "./components/Contact"
+import Privacy_Policy from "./components/Privacy_Policy"
+import Cookie_Policy from "./components/Cookie_Policy"
+import Terms_of_service  from "./components/Terms_of_service"
+
 
 function App() {
   return (
@@ -30,6 +36,12 @@ function App() {
             <Route path="/list-your-pg" element={<ProtectedRoute><AddPgForm /></ProtectedRoute>} />
             <Route path="/your-listings" element={<ProtectedRoute><YourListings /></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy_policy" element={<Privacy_Policy />} />
+            <Route path="/cookie_policy" element={<Cookie_Policy />} />
+            <Route path="/terms_of_service" element={<Terms_of_service />} />
+
           </Route>
         </Routes>
         <Footer />
