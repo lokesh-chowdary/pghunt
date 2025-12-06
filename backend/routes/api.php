@@ -40,6 +40,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/profile', [UserProfileController::class, 'getProfile']);
     Route::put('/profile', [UserProfileController::class, 'updateProfile']);
+    Route::post('/listings', [PgListingController::class, 'store']);
     Route::get('/edit-listing/{id}', [PgListingController::class, 'editListing']);
     Route::delete('/delete-listing/{id}', [PgListingController::class, 'destroy']);
     Route::match(['put', 'post'], '/update-listing/{id}', [PgListingController::class, 'update']);

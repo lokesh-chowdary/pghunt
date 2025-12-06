@@ -211,6 +211,7 @@ class PgListingController extends Controller
             DB::beginTransaction();
 
             try {
+                // Create main listing
                 $pgListing = PgListing::create([
                     'user_id' => $user->id,
                     'pg_name' => $request->pg_name,
@@ -227,6 +228,7 @@ class PgListingController extends Controller
                     'youtube_link' => $request->youtube_link,
                 ]);
 
+                // Sharing Types
                 $sharingTypes = json_decode($request->sharing_types, true);
                 foreach ($sharingTypes as $type => $data) {
                     if ($data['enabled']) {
@@ -239,17 +241,39 @@ class PgListingController extends Controller
                     }
                 }
 
+                // FIXED AMENITY MAPPING
+                $frontendToName = [
+                    'wifi'          => 'WiFi',
+                    'food'          => 'Food',
+                    'ac'            => 'AC',
+                    'laundry'       => 'Laundry',
+                    'power_backup'  => 'Power Backup',
+                    'parking'       => 'Parking',
+                    'security'      => '24/7 Security',
+                    'gym'           => 'Gym',
+                    'hot_water'     => 'Hot Water',
+                    'cleaning'      => 'Room Cleaning',
+                    'tv'            => 'TV',
+                    'fridge'        => 'Refrigerator',
+                ];
+
                 $amenities = json_decode($request->amenities, true);
-                foreach ($amenities as $amenityId) {
-                    $amenityType = AmenityType::where('amenity_id', $amenityId)->first();
-                    if ($amenityType) {
-                        Amenity::create([
-                            'pg_listing_id' => $pgListing->id,
-                            'amenity_type_id' => $amenityType->id,
-                        ]);
+                foreach ($amenities as $key) {
+                    if (isset($frontendToName[$key])) {
+                        $name = $frontendToName[$key];
+
+                        $amenityType = AmenityType::where('name', $name)->first();
+
+                        if ($amenityType) {
+                            Amenity::create([
+                                'pg_listing_id' => $pgListing->id,
+                                'amenity_type_id' => $amenityType->id,
+                            ]);
+                        }
                     }
                 }
 
+                // Nearby Places
                 $nearbyPlaces = json_decode($request->nearby_places, true);
                 foreach ($nearbyPlaces as $place) {
                     NearbyPlace::create([
@@ -258,6 +282,7 @@ class PgListingController extends Controller
                     ]);
                 }
 
+                // Images
                 if ($request->hasFile('images')) {
                     foreach ($request->file('images') as $image) {
                         $path = $image->store('pg_images', 'public');
@@ -273,12 +298,19 @@ class PgListingController extends Controller
                 return response()->json([
                     'success' => true,
                     'message' => 'PG listing created successfully',
-                    'data' => $pgListing->load(['sharingTypes', 'amenities.amenityType', 'nearbyPlaces', 'images'])
+                    'data' => $pgListing->load([
+                        'sharingTypes',
+                        'amenities.amenityType',
+                        'nearbyPlaces',
+                        'images'
+                    ])
                 ], 201);
+
             } catch (\Exception $e) {
                 DB::rollBack();
                 throw $e;
             }
+
         } catch (\Exception $e) {
             Log::error('Error creating PG listing', [
                 'message' => $e->getMessage(),
@@ -293,6 +325,7 @@ class PgListingController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Delete a PG listing
