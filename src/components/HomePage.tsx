@@ -54,18 +54,52 @@ function HomePage() {
     const container = featuresScrollRef.current;
     if (!container) return;
 
-    const autoScroll = () => {
-      const maxScrollLeft = container.scrollWidth - container.clientWidth;
-      const next =
-        container.scrollLeft + container.clientWidth * 0.9 > maxScrollLeft
-          ? 0
-          : container.scrollLeft + container.clientWidth * 0.9;
+    let isHovered = false;
 
-      container.scrollTo({ left: next, behavior: 'smooth' });
+    const handleMouseEnter = () => {
+      isHovered = true;
+    };
+
+    const handleMouseLeave = () => {
+      isHovered = false;
+    };
+
+    container.addEventListener('mouseenter', handleMouseEnter);
+    container.addEventListener('mouseleave', handleMouseLeave);
+
+    const autoScroll = () => {
+      if (!container) return;
+
+      if (isHovered || container.scrollWidth <= container.clientWidth) {
+        return; // pause on hover or if not scrollable
+      }
+
+      const maxScrollLeft = container.scrollWidth - container.clientWidth;
+      const amount = container.clientWidth * 0.9;
+      const next = container.scrollLeft + amount;
+
+      if (next >= maxScrollLeft) {
+        // Reached the end → instant jump back to start (no reverse animation)
+        const prevBehavior = container.style.scrollBehavior;
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = 0;
+
+        // Restore smooth scroll on next frame
+        requestAnimationFrame(() => {
+          container.style.scrollBehavior = prevBehavior || 'smooth';
+        });
+      } else {
+        container.scrollTo({ left: next, behavior: 'smooth' });
+      }
     };
 
     const id = window.setInterval(autoScroll, 4000); // 4 seconds
-    return () => window.clearInterval(id);
+
+    return () => {
+      window.clearInterval(id);
+      container.removeEventListener('mouseenter', handleMouseEnter);
+      container.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, []);
 
   const scrollFeaturesByCard = (direction: 'left' | 'right') => {
@@ -239,7 +273,7 @@ function HomePage() {
         </div>
       </section>
 
-      {/* Features Section - UPDATED */}
+      {/* Features Section - Auto-scroll + Pause on Hover (NO DUPLICATES) */}
       <section className="py-16 px-6 lg:px-12 bg-pgfinder-light">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-3xl lg:text-4xl font-bold text-center mb-4">
@@ -259,6 +293,7 @@ function HomePage() {
               <ChevronLeft size={20} />
             </button>
 
+            {/* Right arrow - mobile only */}
             <button
               type="button"
               onClick={() => scrollFeaturesByCard('right')}
@@ -266,7 +301,6 @@ function HomePage() {
             >
               <ChevronRight size={20} />
             </button>
-
 
             <div
               ref={featuresScrollRef}
@@ -278,87 +312,86 @@ function HomePage() {
                 md:grid-flow-row md:auto-cols-auto md:grid-cols-2 lg:grid-cols-3 md:overflow-visible md:snap-none md:pb-0
               "
             >
-               {/* Feature 1 */}
-                  <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center">
-                    <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
-                      <Heart size={24} className="text-pgfinder-accent" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">AI Recommendations</h3>
-                    <p className="text-gray-600">
-                      Our smart algorithms analyze your preferences to suggest the perfect PG options tailored to your needs.
-                    </p>
-                  </div>
+              {/* Feature 1 */}
+              <div className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center">
+                <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                  <Heart size={24} className="text-pgfinder-accent" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">AI Recommendations</h3>
+                <p className="text-gray-600">
+                  Our smart algorithms analyze your preferences to suggest the perfect PG options tailored to your needs.
+                </p>
+              </div>
 
-                  {/* Feature 2 */}
-                  <div
-                    className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
-                    style={{ animationDelay: '0.2s' }}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
-                      <Calendar size={24} className="text-pgfinder-secondary" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Real-time Availability</h3>
-                    <p className="text-gray-600">
-                      Check real-time vacancy status and book instantly. No more wasted visits to already-filled accommodations.
-                    </p>
-                  </div>
+              {/* Feature 2 */}
+              <div
+                className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
+                style={{ animationDelay: '0.2s' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                  <Calendar size={24} className="text-pgfinder-secondary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Real-time Availability</h3>
+                <p className="text-gray-600">
+                  Check real-time vacancy status and book instantly. No more wasted visits to already-filled accommodations.
+                </p>
+              </div>
 
-                  {/* Feature 3 */}
-                  <div
-                    className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
-                    style={{ animationDelay: '0.4s' }}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
-                      <Home size={24} className="text-pgfinder-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Flexible Stay Options</h3>
-                    <p className="text-gray-600">
-                      Find accommodations for short-term visits or long-term stays with flexible lease terms to match your needs.
-                    </p>
-                  </div>
+              {/* Feature 3 */}
+              <div
+                className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
+                style={{ animationDelay: '0.4s' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                  <Home size={24} className="text-pgfinder-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Flexible Stay Options</h3>
+                <p className="text-gray-600">
+                  Find accommodations for short-term visits or long-term stays with flexible lease terms to match your needs.
+                </p>
+              </div>
 
-                  {/* Feature 4 */}
-                  <div
-                    className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
-                    style={{ animationDelay: '0.6s' }}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
-                      <Shield size={24} className="text-pgfinder-secondary" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Verified Listings</h3>
-                    <p className="text-gray-600">
-                      Every property on our platform is physically verified by our team to ensure listings match reality.
-                    </p>
-                  </div>
+              {/* Feature 4 */}
+              <div
+                className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
+                style={{ animationDelay: '0.6s' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                  <Shield size={24} className="text-pgfinder-secondary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Verified Listings</h3>
+                <p className="text-gray-600">
+                  Every property on our platform is physically verified by our team to ensure listings match reality.
+                </p>
+              </div>
 
-                  {/* Feature 5 */}
-                  <div
-                    className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
-                    style={{ animationDelay: '0.8s' }}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
-                      <Search size={24} className="text-pgfinder-accent" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Advanced Filters</h3>
-                    <p className="text-gray-600">
-                      Filter options by budget, amenities, food preferences, gender-specific options, and much more.
-                    </p>
-                  </div>
+              {/* Feature 5 */}
+              <div
+                className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
+                style={{ animationDelay: '0.8s' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                  <Search size={24} className="text-pgfinder-accent" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Advanced Filters</h3>
+                <p className="text-gray-600">
+                  Filter options by budget, amenities, food preferences, gender-specific options, and much more.
+                </p>
+              </div>
 
-                  {/* Feature 6 */}
-                  <div
-                    className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
-                    style={{ animationDelay: '1s' }}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
-                      <MapPin size={24} className="text-pgfinder-primary" />
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Virtual Tours</h3>
-                    <p className="text-gray-600">
-                      Explore properties virtually with 360° tours and detailed photos before scheduling an in-person visit.
-                    </p>
-                  </div>
-   
+              {/* Feature 6 */}
+              <div
+                className="bg-white rounded-lg p-6 shadow-card hover:shadow-lg transition-all-300 animate-fade-in snap-center flex flex-col items-center text-center"
+                style={{ animationDelay: '1s' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-pgfinder-light flex items-center justify-center mb-4">
+                  <MapPin size={24} className="text-pgfinder-primary" />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">Virtual Tours</h3>
+                <p className="text-gray-600">
+                  Explore properties virtually with 360° tours and detailed photos before scheduling an in-person visit.
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -391,7 +424,7 @@ function HomePage() {
                   <span>Dedicated support team for property owners</span>
                 </li>
               </ul>
-              <button className="bg-white text-pgfinder-primary hover:bg-pgfinder-light py-3 px-8 rounded-md font-medium transition-all-300 inline-flex items-center gap-2">
+              <button className="bg_WHITE text-pgfinder-primary hover:bg-pgfinder-light py-3 px-8 rounded-md font-medium transition-all-300 inline-flex items-center gap-2">
                 List Your Property
                 <ArrowRight size={18} />
               </button>
