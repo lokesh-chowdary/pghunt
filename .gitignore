@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 # Node dependencies
 node_modules/
@@ -47,3 +48,11 @@ origin/lokesh-dev
 
 public/assets/
 public/index.html
+=======
+<<<<<<< HEAD
+node_modules
+=======
+node_modules/
+dist/
+>>>>>>> 107424081239cd75efffcc069e953bb3e21b61b5
+>>>>>>> 7417c5bb (changes)

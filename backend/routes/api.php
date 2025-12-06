@@ -40,7 +40,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', [AuthController::class, 'user']);
     Route::get('/profile', [UserProfileController::class, 'getProfile']);
     Route::put('/profile', [UserProfileController::class, 'updateProfile']);
+<<<<<<< HEAD
     Route::post('/listings', [PgListingController::class, 'store']);
+=======
+>>>>>>> 7417c5bb (changes)
     Route::get('/edit-listing/{id}', [PgListingController::class, 'editListing']);
     Route::delete('/delete-listing/{id}', [PgListingController::class, 'destroy']);
     Route::match(['put', 'post'], '/update-listing/{id}', [PgListingController::class, 'update']);
