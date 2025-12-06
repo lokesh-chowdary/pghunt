@@ -44,3 +44,6 @@ coverage/
 # Dependency backups
 package-lock.json.gz
 origin/lokesh-dev
+
+public/assets/
+public/index.html
