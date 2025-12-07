@@ -4,6 +4,7 @@ import { Building2, LogIn, Plus, Menu, X, LogOut, User, List, UserCircle } from 
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
 import DevModeToggle from '../common/DevModeToggle';
+import Footer from '../footer/Footer';
 
 export default function Layout() {
   const location = useLocation();
@@ -183,6 +184,8 @@ export default function Layout() {
 
         <Outlet />
         <DevModeToggle />
+                <Footer />
+        
       </div>
     </>
   );

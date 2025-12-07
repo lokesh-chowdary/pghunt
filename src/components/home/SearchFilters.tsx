@@ -9,26 +9,13 @@ import {
   ShowerHead,
   WashingMachine,
   BatteryCharging,
+  X,
 } from 'lucide-react';
 
-interface Amenities {
-  wifi: boolean;
-  ac: boolean;
-  geyser: boolean;
-  washingMachine: boolean;
-  lift: boolean;
-  parking: boolean;
-  gym: boolean;
-  fridge: boolean;
-  evCharging: boolean;
-  food: boolean;
-}
-
-interface FilterState {
+export interface FilterState {
   type: string;
   price: number;
-  city: string;
-  amenities: Amenities;
+  amenities: string[]; // matches DB: ['WiFi', 'Food', 'AC', ...]
 }
 
 interface SearchFiltersProps {
@@ -37,122 +24,168 @@ interface SearchFiltersProps {
   onClose?: () => void;
 }
 
-const initialFilters: FilterState = {
+// ✅ Named export – used in Home.tsx
+export const initialFilters: FilterState = {
   type: '',
   price: 0,
-  city: '',
-  amenities: {
-    wifi: false,
-    ac: false,
-    geyser: false,
-    washingMachine: false,
-    lift: false,
-    parking: false,
-    gym: false,
-    fridge: false,
-    evCharging: false,
-    food: false,
-  },
+  amenities: [], // no amenities selected
 };
 
+// these `key` values MUST match amenity_types.name in DB
 const amenitiesList = [
-  { key: 'wifi', label: 'Wi-Fi', icon: Wifi },
-  { key: 'ac', label: 'AC', icon: Snowflake },
-  { key: 'geyser', label: 'Geyser', icon: ShowerHead },
-  { key: 'washingMachine', label: 'Washing Machine', icon: WashingMachine },
-  { key: 'lift', label: 'Lift', icon: MoveVertical },
-  { key: 'parking', label: 'Parking', icon: Car },
-  { key: 'gym', label: 'Gym', icon: Dumbbell },
-  { key: 'fridge', label: 'Fridge', icon: Tv },
-  { key: 'evCharging', label: 'EV Charging', icon: BatteryCharging },
-  {key: 'food', label: 'Food', icon: Tv },
+  { key: 'WiFi', label: 'WiFi', icon: Wifi },
+  { key: 'Food', label: 'Food', icon: Tv }, // change icon if you want
+  { key: 'AC', label: 'AC', icon: Snowflake },
+  { key: 'Laundry', label: 'Laundry', icon: WashingMachine },
+  { key: 'Power Backup', label: 'Power Backup', icon: BatteryCharging },
+  { key: 'Parking', label: 'Parking', icon: Car },
+  { key: '24/7 Security', label: '24/7 Security', icon: MoveVertical },
+  { key: 'Gym', label: 'Gym', icon: Dumbbell },
+  { key: 'Hot Water', label: 'Hot Water', icon: ShowerHead },
+  { key: 'Room Cleaning', label: 'Room Cleaning', icon: WashingMachine },
+  { key: 'TV', label: 'TV', icon: Tv },
+  { key: 'Refrigerator', label: 'Refrigerator', icon: Tv },
 ];
 
-const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onClose }) => {
+const SearchFilters: React.FC<SearchFiltersProps> = ({
+  filters,
+  setFilters,
+  onClose,
+}) => {
   const handleClear = () => setFilters(initialFilters);
-  
-  const handleApplyFilters = () => {
-    console.log(filters);
-    if (onClose) onClose(); // Close filters on mobile after applying
-  };
 
-  const toggleAmenity = (key: keyof Amenities) => {
-    setFilters(prev => ({
-      ...prev,
-      amenities: {
-        ...prev.amenities,
-        [key]: !prev.amenities[key],
-      },
-    }));
+  const toggleAmenity = (name: string) => {
+    setFilters(prev => {
+      const alreadySelected = prev.amenities.includes(name);
+      return {
+        ...prev,
+        amenities: alreadySelected
+          ? prev.amenities.filter(a => a !== name) // remove
+          : [...prev.amenities, name],             // add
+      };
+    });
   };
 
   return (
     <aside
-      className="w-full sm:w-80 p-5 border rounded-2xl shadow-md bg-white mb-4 sm:mb-0 sm:mr-6 sticky top-4 z-10 overflow-y-auto max-h-[85vh]"
+      className="
+        w-full sm:w-80 p-5 sm:p-6
+        border border-gray-200 rounded-2xl
+        bg-white shadow-sm sm:shadow-md
+        mb-4 sm:mb-0 sm:mr-6
+        sticky top-4 z-10
+        max-h-[85vh] overflow-y-auto
+      "
       aria-label="Search filters"
     >
-      <h2 className="text-2xl font-bold text-gray-800 mb-5">Search Filters</h2>
+      {/* Header */}
+      <div className="flex items-start justify-between gap-3 mb-5">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Search Filters</h2>
+          <p className="text-xs text-gray-500 mt-0.5">
+            Refine results to match your perfect PG.
+          </p>
+        </div>
 
-      {/* PG Type Filter */}
-      <div className="mb-6">
-        <label htmlFor="typeFilter" className="block text-sm font-medium text-gray-700 mb-2">
+        <div className="flex items-center gap-2">
+          {onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="sm:hidden inline-flex items-center justify-center w-7 h-7 rounded-full border border-gray-200 bg-white hover:bg-gray-50"
+              aria-label="Close filters"
+            >
+              <X className="w-4 h-4 text-gray-600" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* PG Type */}
+      <div className="mb-5">
+        <label
+          htmlFor="typeFilter"
+          className="block text-xs font-medium text-gray-600 mb-1.5"
+        >
           PG Type
         </label>
         <select
           id="typeFilter"
-          className="w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
           value={filters.type}
           onChange={e => setFilters(f => ({ ...f, type: e.target.value }))}
         >
           <option value="">All Types</option>
-            <option value="Gents">Male</option>
-            <option value="Ladies">Female</option>
-            <option value="co-living">Colive</option>
+          <option value="gents">Gents</option>
+          <option value="ladies">Ladies</option>
+          <option value="co-living">Co-living</option>
         </select>
       </div>
 
       {/* Price Filter */}
       <div className="mb-6">
-        <label htmlFor="priceFilter" className="block text-sm font-medium text-gray-700 mb-2">
-          Price Range
-        </label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label
+            htmlFor="priceFilter"
+            className="block text-xs font-medium text-gray-600"
+          >
+            Budget (per month)
+          </label>
+          <span className="text-xs text-gray-500">
+            Selected:{' '}
+            <span className="font-semibold text-gray-800">
+              ₹{filters.price}
+            </span>
+          </span>
+        </div>
+
         <input
           type="range"
           id="priceFilter"
-          min="0"
-          max="10000"
+          min={0}
+          max={20000}
+          step={500}
           className="w-full accent-blue-600"
           value={filters.price}
-          onChange={e => setFilters(f => ({ ...f, price: Number(e.target.value) }))}
+          onChange={e =>
+            setFilters(f => ({ ...f, price: Number(e.target.value) }))
+          }
         />
-        <div className="flex justify-between text-xs text-gray-500 mt-1">
+
+        <div className="flex justify-between text-[11px] text-gray-400 mt-1">
           <span>₹0</span>
-          <span>₹10,000+</span>
-        </div>
-        <div className="text-right text-sm text-gray-700 mt-1">
-          Selected: <span className="font-semibold">₹{filters.price}</span>
+          <span>₹20,000+</span>
         </div>
       </div>
 
       {/* Amenities Filter */}
-      <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-700 mb-2">Amenities</label>
+      <div className="mb-3">
+        <div className="flex items-center justify-between mb-2">
+          <label className="block text-xs font-medium text-gray-600">
+            Amenities
+          </label>
+          <span className="text-[11px] text-gray-400">
+            Tap to select multiple
+          </span>
+        </div>
+
         <div className="flex flex-wrap gap-2">
           {amenitiesList.map(({ key, label, icon: Icon }) => {
-            const isSelected = filters.amenities[key as keyof Amenities];
+            const isSelected = filters.amenities.includes(key);
+
             return (
               <button
                 key={key}
                 type="button"
                 aria-pressed={isSelected}
-                onClick={() => toggleAmenity(key as keyof Amenities)}
-                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-sm transition-all duration-150 shadow-sm whitespace-nowrap ${
+                onClick={() => toggleAmenity(key)}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 whitespace-nowrap border ${
                   isSelected
-                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-blue-600 text-white border-blue-600 shadow-sm'
+                    : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="w-3.5 h-3.5" />
                 {label}
               </button>
             );
@@ -160,14 +193,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({ filters, setFilters, onCl
         </div>
       </div>
 
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 mt-6">
-        {/* <button
-          className="w-full px-4 py-2 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition duration-150"
-          onClick={handleApplyFilters}
-        >
-          Apply Filters
-        </button> */}
+      {/* Actions */}
+      <div className="flex flex-col sm:flex-row gap-3 mt-4">
         <button
           type="button"
           className="w-full px-4 py-2 rounded-lg bg-gray-200 text-gray-800 hover:bg-gray-300 transition duration-150"

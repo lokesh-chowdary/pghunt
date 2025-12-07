@@ -310,7 +310,6 @@ class PgListingController extends Controller
                 DB::rollBack();
                 throw $e;
             }
-
         } catch (\Exception $e) {
             Log::error('Error creating PG listing', [
                 'message' => $e->getMessage(),
@@ -325,7 +324,6 @@ class PgListingController extends Controller
             ], 500);
         }
     }
-
 
     /**
      * Delete a PG listing

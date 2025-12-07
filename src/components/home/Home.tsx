@@ -1,72 +1,37 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import SearchFilters from './SearchFilters';
+import SearchFilters, {
+  FilterState,
+  initialFilters,
+} from './SearchFilters';
 import type { PG } from '../../types';
 import { getFirstImageUrl, handleImageError } from '../../utils/imageUtils';
 import { getApiUrl } from '../../config/api';
 import { Filter, X, Heart, Share2, MapPin } from 'lucide-react';
 
-interface Amenities {
-  wifi: boolean;
-  ac: boolean;
-  geyser: boolean;
-  washingMachine: boolean;
-  lift: boolean;
-  parking: boolean;
-  gym: boolean;
-  fridge: boolean;
-  evCharging: boolean;
-  food: boolean;
-}
-
-interface FilterState {
-  type: string;
-  price: number;
-  city: string;
-  amenities: Amenities;
-}
-
-const initialFilters: FilterState = {
-  type: "",
-  price: 0,
-  city: "",
-  amenities: {
-    wifi: false,
-    ac: false,
-    geyser: false,
-    washingMachine: false,
-    lift: false,
-    parking: false,
-    gym: false,
-    fridge: false,
-    evCharging: false,
-    food: false,
-  },
-};
-
 const Home = () => {
   const [pgs, setPgs] = useState<PG[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(4);
-  const [filters, setFilters] = useState(initialFilters);
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     axios
       .get(getApiUrl('/pgs'))
-      .then((response) => {
-        // Backend returns { success: true, data: [...] }
+      .then(response => {
         if (response.data.success && Array.isArray(response.data.data)) {
-          setPgs(response.data.data);
+          const data: PG[] = response.data.data;
+          setPgs(data);
         } else {
           console.error('Invalid response format:', response.data);
           setPgs([]);
         }
         setLoading(false);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error('Error fetching PG data:', error);
-        setPgs([]); // Ensure pgs is always an array
+        setPgs([]);
         setLoading(false);
       });
   }, []);
@@ -76,16 +41,24 @@ const Home = () => {
   }, [filters]);
 
   const handleShowMore = () => {
-    setVisibleCount((prev) => prev + 4);
+    setVisibleCount(prev => prev + 4);
   };
 
-  const filteredPGs = (Array.isArray(pgs) ? pgs : []).filter((pg) => {
-    // Handle both old and new data structures
-    const pgType = pg.type || pg.preferred_for;
-    const matchesType = !filters.type || pgType === filters.type;
-    const matchesCity =
-      !filters.city ||
-      pg.city?.toLowerCase().includes(filters.city.toLowerCase());
+  const filteredPGs = (Array.isArray(pgs) ? pgs : []).filter(pg => {
+    // PG Type: use category/type/preferred_for
+    console.log(pg);
+    const pgTypeRaw = (
+      (pg as any).type ||
+      pg.category ||
+      pg.preferred_for ||
+      ''
+    )
+      .toString()
+      .toLowerCase()
+      .trim();
+
+    const matchesType =
+      !filters.type || pgTypeRaw === filters.type.toLowerCase();
 
     // Get price from sharing types or fallback to price field
     let pgPrice = pg.price || 0;
@@ -97,20 +70,14 @@ const Home = () => {
     }
     const matchesPrice = pgPrice >= filters.price;
 
-    const selectedAmenities = Object.entries(filters.amenities)
-      .filter(([, value]) => value)
-      .map(([key]) => key);
-
+    // Amenities: filters.amenities (string[]) vs pg.amenities (string[])
     const matchesAmenities =
-      selectedAmenities.length === 0 ||
-      selectedAmenities.every((amenity) =>
-        pg.amenities?.some(
-          (pgAmenity: string) =>
-            pgAmenity.toLowerCase().includes(amenity.toLowerCase())
-        ) || false
+      filters.amenities.length === 0 ||
+      filters.amenities.every(selected =>
+        Array.isArray(pg.amenities) && pg.amenities.includes(selected)
       );
 
-    return matchesType && matchesCity && matchesPrice && matchesAmenities;
+    return matchesType && matchesPrice && matchesAmenities;
   });
 
   if (loading)
@@ -150,17 +117,19 @@ const Home = () => {
           <div className="w-full sm:w-9/12">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {filteredPGs.slice(0, visibleCount).map((pg: PG) => {
-                // Handle both old and new data structures
                 const pgName = pg.pg_name || pg.name || 'PG';
-                const pgType = pg.type || pg.preferred_for;
 
-                // Get the lowest price from sharing types or fallback to price field
+                // Display type: use category mainly
+                const pgTypeLabel =
+                  pg.category || (pg as any).type || '';
+
+                // Get lowest price from sharing types or fallback to price field
                 let displayPrice = pg.price || 0;
                 if (pg.sharing_types && !pg.price) {
                   const enabledPrices = Object.values(pg.sharing_types)
                     .filter((sharing: any) => sharing.enabled)
                     .map((sharing: any) => parseInt(sharing.rent) || 0)
-                    .filter((price) => price > 0);
+                    .filter(price => price > 0);
                   displayPrice =
                     enabledPrices.length > 0 ? Math.min(...enabledPrices) : 0;
                 }
@@ -192,14 +161,14 @@ const Home = () => {
                         <button
                           type="button"
                           className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow-md"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={e => e.stopPropagation()}
                         >
                           <Heart className="w-4 h-4 text-gray-600" />
                         </button>
                         <button
                           type="button"
                           className="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow-md"
-                          onClick={(e) => e.stopPropagation()}
+                          onClick={e => e.stopPropagation()}
                         >
                           <Share2 className="w-4 h-4 text-gray-600" />
                         </button>
@@ -213,16 +182,12 @@ const Home = () => {
                           <h2 className="text-base font-semibold truncate max-w-[70%]">
                             {pgName}
                           </h2>
-                          {/* Price on the right like reference */}
+                          {/* Price on the right */}
                           <div className="text-right whitespace-nowrap">
                             {displayPrice > 0 ? (
-                              <>
-                                 
-                                <p className="text-sm font-bold text-[#0BA668] leading-tight">
-                                  ₹{displayPrice.toLocaleString('en-IN')}
-                                </p>
-                               
-                              </>
+                              <p className="text-sm font-bold text-[#0BA668] leading-tight">
+                                ₹{displayPrice.toLocaleString('en-IN')}
+                              </p>
                             ) : (
                               <p className="text-xs text-gray-500">
                                 Price on request
@@ -231,8 +196,15 @@ const Home = () => {
                           </div>
                         </div>
 
-                        {/* Location */}
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
+                        {/* Category */}
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                          <p className="truncate">
+                            {pg.category || 'Category not available'}
+                          </p>
+                        </div>
+
+                        {/* Location (still shown, but not filtered) */}
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
                           <MapPin className="w-3 h-3" />
                           <p className="truncate">
                             {pg.address || 'Address not available'},{' '}
@@ -240,22 +212,20 @@ const Home = () => {
                           </p>
                         </div>
 
-                        {/* Type + static chips (Professionals / Verified) */}
-                        <div className="flex flex-wrap items-center gap-2 mb-4">
-                          {pgType && (
+                        {/* Type + static chips */}
+                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                          {pgTypeLabel && (
                             <span className="px-2 py-1 rounded-full bg-[#E7F1FF] text-[11px] font-medium text-[#1D4ED8] capitalize">
-                              {pgType}
+                              {pgTypeLabel}
                             </span>
                           )}
-                          <span className="px-2 py-1 rounded-full bg-[#FFF4E5] text-[11px] font-medium text-[#92400E]">
-                            Professionals
+                          {/* <span className="px-2 py-1 rounded-full bg-[#FFF4E5] text-[11px] font-medium text-[#92400E]">
+                            {pg.preferred_for || 'Professionals'}
                           </span>
                           <span className="px-2 py-1 rounded-full bg-[#E6F7EC] text-[11px] font-medium text-[#047857] border border-[#34D399]/60">
                             Verified
-                          </span>
+                          </span> */}
                         </div>
-
-                    
                       </div>
                     </div>
                   </div>
