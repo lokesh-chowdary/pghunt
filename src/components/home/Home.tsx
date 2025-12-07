@@ -176,9 +176,9 @@ const Home = () => {
                     </div>
 
                     {/* Content section */}
-                    <div className="flex flex-col justify-between flex-1 px-4 pt-1">
+                    <div className="flex flex-col justify-between flex-1 px-4 pt-4">
                       <div>
-                        <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="flex items-start justify-between gap-2 mb-4">
                           <h2 className="text-base font-semibold truncate max-w-[70%]">
                             {pgName}
                           </h2>

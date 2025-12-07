@@ -58,6 +58,15 @@ type EnabledSharingType = {
   rent: number;
 };
 
+// ✅ Now just shows 1 / 2 / 3 instead of Single / Double / Triple
+const formatSharingLabel = (type: string) => {
+  const num = Number(type);
+  if (Number.isFinite(num) && num > 0) {
+    return String(num); // 1, 2, 3...
+  }
+  return type.replace(/_/g, ' ');
+};
+
 export default function PGCardDetails() {
   const { id } = useParams<{ id: string }>();
 
@@ -180,6 +189,7 @@ export default function PGCardDetails() {
 
   const pgName = pg.pg_name || pg.name || 'PG Details';
 
+  // ✅ Skip disabled, missing, or 0-rent sharings, and ignore key "0"
   const getEnabledSharingTypes = (): EnabledSharingType[] => {
     const raw = (pg as any).sharing_types as
       | Record<string, SharingValue>
@@ -188,10 +198,22 @@ export default function PGCardDetails() {
     if (!raw) return [];
 
     return Object.entries(raw)
-      .filter(([, value]) => Boolean(value?.enabled))
+      .filter(([key, value]) => {
+        const enabled = Boolean(value?.enabled);
+        const rent = value?.rent;
+
+        const hasValidRent =
+          rent !== null && rent !== undefined && Number(rent) > 0;
+
+        const numKey = Number(key);
+        const validKey =
+          Number.isNaN(numKey) || numKey > 0; // ignore "0" key
+
+        return enabled && hasValidRent && validKey;
+      })
       .map(([key, value]) => ({
         type: key,
-        rent: Number(value?.rent ?? 0),
+        rent: Number(value?.rent),
       }));
   };
 
@@ -211,7 +233,7 @@ export default function PGCardDetails() {
   const nearbyPlaces = ((pg as any).nearby_places ?? []) as string[];
 
   const hasPricingSection =
-    sharingTypes.length > 0 || (pg as any).price != null;
+    sharingTypes.length > 1 || (pg as any).price != null;
   const hasAmenitiesSection = amenities.length > 0;
   const hasPoliciesSection =
     securityDeposit !== undefined ||
@@ -239,8 +261,6 @@ export default function PGCardDetails() {
   return (
     <div className="min-h-screen bg-[#F5F7FB]">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-4 py-5 sm:py-7 lg:py-8">
-       
-
         {/* Main layout */}
         <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
           {/* LEFT COLUMN */}
@@ -250,13 +270,19 @@ export default function PGCardDetails() {
               {/* Image gallery */}
               <div className="relative">
                 <div className="h-60 sm:h-72 md:h-80 lg:h-80">
-                  <img
-                    src={activeImageUrl}
-                    alt={pgName}
-                    className="w-full h-full object-cover"
-                    onError={handleImageError}
-                    loading="lazy"
-                  />
+                  {activeImageUrl ? (
+                    <img
+                      src={activeImageUrl}
+                      alt={pgName}
+                      className="w-full h-full object-cover"
+                      onError={handleImageError}
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-slate-100 text-slate-400 text-sm">
+                      No image available
+                    </div>
+                  )}
                 </div>
 
                 {/* Top action bar */}
@@ -337,7 +363,7 @@ export default function PGCardDetails() {
 
               {/* Basic details */}
               <div className="px-5 sm:px-6 py-4 sm:py-5 border-t border-slate-100">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2 mb-1.5">
                       {(pg as any).category && (
@@ -407,7 +433,7 @@ export default function PGCardDetails() {
                               className="rounded-2xl border border-slate-100 bg-slate-50/60 px-3 py-3 sm:px-4 sm:py-4 text-center hover:border-emerald-200 hover:bg-emerald-50/70 transition-colors"
                             >
                               <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">
-                                {type}
+                                {formatSharingLabel(type)} - SHARING
                               </p>
                               <p className="text-sm sm:text-base font-semibold text-slate-900">
                                 ₹{rent.toLocaleString()}
@@ -493,7 +519,7 @@ export default function PGCardDetails() {
                           Policies &amp; Terms
                         </h3>
                       </div>
-                      <div className="grid sm:grid-cols-3 gap-3 sm:gap-4">
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
                         {securityDeposit !== undefined && (
                           <div className="rounded-2xl border border-slate-100 bg-slate-50/70 px-4 py-3 text-center">
                             <IndianRupee className="w-5 h-5 text-emerald-600 mx-auto mb-1.5" />
