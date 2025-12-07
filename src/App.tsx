@@ -8,7 +8,6 @@ import ForgotPassword from './components/store/ForgotPassword';
 import PGDetails from './components/home/PGCardDetails';
 import YourListings from './components/home/YourListings';
 import UserProfile from './components/profile/UserProfile';
-import Footer from './components/footer/Footer';
 import HomePage from './components/HomePage';
 import AddPgForm from './components/listpgdetails/AddPgForm';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -41,10 +40,8 @@ function App() {
             <Route path="/privacy_policy" element={<Privacy_Policy />} />
             <Route path="/cookie_policy" element={<Cookie_Policy />} />
             <Route path="/terms_of_service" element={<Terms_of_service />} />
-
           </Route>
         </Routes>
-        <Footer />
       </Router>
     </ErrorBoundary>
   );
