@@ -207,9 +207,9 @@ const Home = () => {
                     </div>
 
                     {/* Content section */}
-                    <div className="flex flex-col justify-between flex-1 px-4 pt-1">
+                    <div className="flex flex-col justify-between flex-1 px-4 pt-4">
                       <div>
-                        <div className="flex items-start justify-between gap-2 mb-1">
+                        <div className="flex items-start justify-between gap-2 mb-4">
                           <h2 className="text-base font-semibold truncate max-w-[70%]">
                             {pgName}
                           </h2>
@@ -232,7 +232,7 @@ const Home = () => {
                         </div>
 
                         {/* Location */}
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-4">
                           <MapPin className="w-3 h-3" />
                           <p className="truncate">
                             {pg.address || 'Address not available'},{' '}
@@ -241,7 +241,7 @@ const Home = () => {
                         </div>
 
                         {/* Type + static chips (Professionals / Verified) */}
-                        <div className="flex flex-wrap items-center gap-2 mb-3">
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
                           {pgType && (
                             <span className="px-2 py-1 rounded-full bg-[#E7F1FF] text-[11px] font-medium text-[#1D4ED8] capitalize">
                               {pgType}
