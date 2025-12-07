@@ -61,9 +61,6 @@ const Home = () => {
         } else {
           console.error('Invalid response format:', response.data);
           setPgs([]);
-        }
-        setLoading(false);
-      })
       .catch((error) => {
         console.error('Error fetching PG data:', error);
         setPgs([]); // Ensure pgs is always an array
