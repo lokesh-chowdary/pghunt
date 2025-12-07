@@ -22,7 +22,7 @@ const navItems: NavItem[] = [
   { label: "Account", to: "/account", icon: User2 },
 ];
 
-const Mobile_nav_bar: React.FC = () => {
+const MobileNavBar: React.FC = () => {
   return (
     // Hidden on desktop, visible on mobile + tablet
     <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 border-t border-gray-200 bg-white/95 backdrop-blur">
@@ -61,4 +61,4 @@ const Mobile_nav_bar: React.FC = () => {
   );
 };
 
-export default Mobile_nav_bar;
+export default MobileNavBar;

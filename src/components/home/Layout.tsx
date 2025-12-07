@@ -5,7 +5,7 @@ import { useAuthStore } from '../store/authStore';
 import { toast } from 'sonner';
 import DevModeToggle from '../common/DevModeToggle';
 import Footer from '../footer/Footer';
-
+import MobileNavBar from './MobileNavBar';
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -184,8 +184,9 @@ export default function Layout() {
 
         <Outlet />
         <DevModeToggle />
-                <Footer />
-        
+         <Footer />
+   
+
       </div>
     </>
   );
