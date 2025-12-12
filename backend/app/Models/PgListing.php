@@ -10,6 +10,8 @@ class PgListing extends Model
 {
     use HasFactory;
 
+    protected $table = 'pg_listings';
+
     protected $fillable = [
         'user_id',
         'pg_name',
@@ -53,5 +55,10 @@ class PgListing extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
     }
 }

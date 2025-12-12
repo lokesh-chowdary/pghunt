@@ -1,5 +1,5 @@
-import YourListingsDirect from './components/home/YourListingsDirect';
-import UserProfileDirect from './components/profile/UserProfileDirect';
+import YourListingsDirect from './components/pages/YourListingsDirect';
+import UserProfileDirect from './components/pages/UserProfileDirect';
 
 // This file provides direct access to the alternate components
 // that use the simplified direct API endpoints

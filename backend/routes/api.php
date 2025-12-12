@@ -7,6 +7,7 @@ use App\Http\Controllers\PgListingController;
 use App\Http\Controllers\UserListingController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\CallbackController;
+use App\Http\Controllers\WishlistController;
 use \Laravel\Sanctum\Http\Controllers\CsrfCookieController;
 
 // Public Routes (No authentication required)
@@ -22,6 +23,9 @@ Route::group(['middleware' => ['cors']], function () {
     Route::get('/pgs/{id}', [PgListingController::class, 'show'])->missing(fn() =>
         response()->json(['message' => 'Show method not implemented yet'], 501)
     );
+    
+    // Wishlist check (Public - returns false if not authenticated)
+    Route::get('/wishlist/check/{id}', [WishlistController::class, 'check']);
 
     // CSRF Cookie (Laravel Sanctum)
     Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
@@ -45,4 +49,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::delete('/delete-listing/{id}', [PgListingController::class, 'destroy']);
     Route::match(['put', 'post'], '/update-listing/{id}', [PgListingController::class, 'update']);
     Route::get('/user-listings', [UserListingController::class, 'getUserListings']);
+    
+    // Wishlist routes (Protected)
+    Route::post('/wishlist/toggle/{id}', [WishlistController::class, 'toggle']);
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+    Route::post('/wishlist/check-multiple', [WishlistController::class, 'checkMultiple']);
 });

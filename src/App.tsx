@@ -1,22 +1,23 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import Layout from './components/home/Layout';
-import Home from './components/home/Home';
-import Login from './components/store/Login';
-import Register from './components/store/Register';
-import ForgotPassword from './components/store/ForgotPassword';
-import PGDetails from './components/home/PGCardDetails';
-import YourListings from './components/home/YourListings';
-import UserProfile from './components/profile/UserProfile';
-import HomePage from './components/HomePage';
-import AddPgForm from './components/listpgdetails/AddPgForm';
+import Layout from './components/layout/Layout';
+import SearchPage from './components/pages/SearchPage';
+import Login from './components/auth/Login';
+import Register from './components/auth/Register';
+import ForgotPassword from './components/auth/ForgotPassword';
+import PGDetailsPage from './components/pages/PGDetailsPage';
+import YourListingsPage from './components/pages/YourListingsPage';
+import ProfilePage from './components/pages/ProfilePage';
+import LandingPage from './components/pages/LandingPage';
+import WishlistPage from './components/pages/WishlistPage';
+import AddPgForm from './components/pg-listing/AddPgForm';
 import ErrorBoundary from './components/ErrorBoundary';
-import ProtectedRoute from './components/store/ProtectedRoute';
-import About from "./components/About";
-import Contact from "./components/Contact"
-import Privacy_Policy from "./components/Privacy_Policy"
-import Cookie_Policy from "./components/Cookie_Policy"
-import Terms_of_service  from "./components/Terms_of_service"
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import AboutPage from "./components/pages/AboutPage";
+import ContactPage from "./components/pages/ContactPage";
+import PrivacyPolicy from "./components/policies/PrivacyPolicy";
+import CookiePolicy from "./components/policies/CookiePolicy";
+import TermsOfService from "./components/policies/TermsOfService";
 
 
 function App() {
@@ -26,20 +27,21 @@ function App() {
         <Toaster position="top-center" richColors />
         <Routes>
           <Route element={<Layout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/search" element={<Home />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/pg/:id" element={<PGDetails />} />
+            <Route path="/pg/:id" element={<PGDetailsPage />} />
             <Route path="/list-your-pg" element={<ProtectedRoute><AddPgForm /></ProtectedRoute>} />
-            <Route path="/your-listings" element={<ProtectedRoute><YourListings /></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><UserProfile /></ProtectedRoute>} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/privacy_policy" element={<Privacy_Policy />} />
-            <Route path="/cookie_policy" element={<Cookie_Policy />} />
-            <Route path="/terms_of_service" element={<Terms_of_service />} />
+            <Route path="/your-listings" element={<ProtectedRoute><YourListingsPage /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+            <Route path="/wishlist" element={<ProtectedRoute><WishlistPage /></ProtectedRoute>} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/privacy_policy" element={<PrivacyPolicy />} />
+            <Route path="/cookie_policy" element={<CookiePolicy />} />
+            <Route path="/terms_of_service" element={<TermsOfService />} />
           </Route>
         </Routes>
       </Router>

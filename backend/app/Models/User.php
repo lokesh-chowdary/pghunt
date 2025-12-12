@@ -52,4 +52,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(PgListing::class);
     }
+
+    /**
+     * Get the wishlist items for the user.
+     */
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
 }

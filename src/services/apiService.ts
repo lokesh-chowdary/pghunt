@@ -23,7 +23,10 @@ export const apiService = {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      console.log('Making GET request to:', getApiUrl(endpoint), 'with token:', token);
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log('Making GET request to:', getApiUrl(endpoint));
+      }
 
       const response = await fetch(getApiUrl(endpoint), {
         method: 'GET',
@@ -67,7 +70,10 @@ export const apiService = {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      console.log('Making POST request to:', getApiUrl(endpoint), 'with token:', token);
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log('Making POST request to:', getApiUrl(endpoint));
+      }
 
       const response = await fetch(getApiUrl(endpoint), {
         method: 'POST',
@@ -109,7 +115,10 @@ export const apiService = {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      console.log('Making PUT request to:', getApiUrl(endpoint), 'with token:', token);
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log('Making PUT request to:', getApiUrl(endpoint));
+      }
 
       const response = await fetch(getApiUrl(endpoint), {
         method: 'PUT',
@@ -150,7 +159,10 @@ export const apiService = {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      console.log('Making DELETE request to:', getApiUrl(endpoint), 'with token:', token);
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log('Making DELETE request to:', getApiUrl(endpoint));
+      }
 
       const response = await fetch(getApiUrl(endpoint), {
         method: 'DELETE',
@@ -178,13 +190,123 @@ export const apiService = {
    */
   async getCsrfCookie(): Promise<void> {
     try {
-      console.log('Fetching CSRF cookie');
+      // Only log in development mode
+      if (import.meta.env.DEV) {
+        console.log('Fetching CSRF cookie');
+      }
       await fetch(getApiUrl('/sanctum/csrf-cookie'), {
         method: 'GET',
         credentials: 'include',
       });
     } catch (error) {
       console.error('Error fetching CSRF cookie:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Toggle wishlist status for a PG
+   */
+  async toggleWishlist(pgId: number): Promise<{ success: boolean; is_wishlisted: boolean; message?: string }> {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      const headers: HeadersInit = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      };
+
+      const response = await fetch(getApiUrl(`/wishlist/toggle/${pgId}`), {
+        method: 'POST',
+        headers,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('auth_token');
+          throw new Error('Authentication failed. Please log in again.');
+        }
+        throw new Error(`API request failed with status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API Error (toggle wishlist):`, error);
+      throw error;
+    }
+  },
+
+  /**
+   * Check if a PG is wishlisted
+   */
+  async checkWishlist(pgId: number): Promise<{ success: boolean; is_wishlisted: boolean }> {
+    try {
+      const token = localStorage.getItem('auth_token');
+      const headers: HeadersInit = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(getApiUrl(`/wishlist/check/${pgId}`), {
+        method: 'GET',
+        headers,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API Error (check wishlist):`, error);
+      // Return false if error (user not authenticated or other error)
+      return { success: true, is_wishlisted: false };
+    }
+  },
+
+  /**
+   * Get all wishlisted PGs
+   */
+  async getWishlist(): Promise<{ success: boolean; data: any[] }> {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        throw new Error('Authentication required');
+      }
+
+      const headers: HeadersInit = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      };
+
+      const response = await fetch(getApiUrl('/wishlist'), {
+        method: 'GET',
+        headers,
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        if (response.status === 401 || response.status === 403) {
+          localStorage.removeItem('auth_token');
+          throw new Error('Authentication failed. Please log in again.');
+        }
+        throw new Error(`API request failed with status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error(`API Error (get wishlist):`, error);
       throw error;
     }
   }

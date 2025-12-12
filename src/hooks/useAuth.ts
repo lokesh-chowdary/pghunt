@@ -1,4 +1,4 @@
-import { useAuthStore } from '../components/store/authStore';
+import { useAuthStore } from '../components/auth/authStore';
 
 /**
  * Custom hook for authentication

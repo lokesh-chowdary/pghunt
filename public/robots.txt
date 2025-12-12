@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /profile
+Disallow: /your-listings
+Disallow: /list-your-pg
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml
+
